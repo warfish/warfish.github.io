@@ -1,0 +1,17 @@
+markdown: redcarpet
+highlighter: pygments
+permalink: pretty
+title: wrfsh
+tagline: 'My worklog'
+description: 'My worklog'
+url: warfish.github.io
+
+author:
+    name: 'Evgeny Yakovlev'
+    url:  warfish.github.io
+
+paginate: 1
+
+github:
+    repo: https://github.com/warfish/warfish.github.io
+
