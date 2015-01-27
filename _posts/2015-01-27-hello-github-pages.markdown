@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Hello githib.io
+title: Hello github.io
 ---
 Hi, here's some code 
 {% highlight c %}
