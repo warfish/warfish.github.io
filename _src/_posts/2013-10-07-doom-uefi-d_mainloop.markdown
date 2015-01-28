@@ -10,7 +10,7 @@ tags:
 - doom-uefi
 ---
 
-[![Screen Shot 2013-10-07 at 11.15.04 PM](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-07-at-11-15-04-pm.png?w=300)](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-07-at-11-15-04-pm.png)
+[![Screen Shot 2013-10-07 at 11.15.04 PM]({{ site.images_root }}/screen-shot-2013-10-07-at-11-15-04-pm.png)]({{ site.images_root }}/screen-shot-2013-10-07-at-11-15-04-pm.png)
 
 
 

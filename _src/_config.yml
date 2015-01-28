@@ -7,6 +7,8 @@ description: 'My worklog'
 url: warfish.github.io
 baseurl: /
 
+images_root: '/public/images'
+
 tag_page_layout: tag_page
 tag_page_dir: .
 

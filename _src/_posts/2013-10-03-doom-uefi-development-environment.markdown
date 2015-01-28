@@ -10,7 +10,7 @@ tags:
 - doom-uefi
 ---
 
-[![Screen Shot 2013-10-03 at 11.47.33 PM](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-03-at-11-47-33-pm.png?w=300)](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-03-at-11-47-33-pm.png)
+[![Screen Shot 2013-10-03 at 11.47.33 PM]({{ site.images_root }}/screen-shot-2013-10-03-at-11-47-33-pm.png?w=300)]({{ site.images_root }}/screen-shot-2013-10-03-at-11-47-33-pm.png)
 
 Qemu запущен с кастомной прошивкой из EDK - OVMF. У этого эмулятора есть убойная фича (вообще их много) - способность задавать в качестве диска папку на хостовой файловой системе.
 

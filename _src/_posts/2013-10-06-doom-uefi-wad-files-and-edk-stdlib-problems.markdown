@@ -14,24 +14,27 @@ tags:
 
 Заголовок файла описывается структурой wadinfo_t:
 
-
-<blockquote>struct wadinfo_t
+{% highlight c %}
+struct wadinfo_t
 {
-char id[4]; // "IWAD" or "PWAD"
-int numlumps;
-int tableoffset;
-};</blockquote>
+    char id[4]; // "IWAD" or "PWAD"
+    int numlumps;
+    int tableoffset;
+};
+{% endhighlight %}
 
 
 Файла начинается с "IWAD" или "PWAD" идентификатора, tableoffset показывает на позицию в файле где хранится массив структур filelump_t размером numlumps элементов:
 
 
-<blockquote>struct filelump_t
+{% highlight c %}
+struct filelump_t
 {
-char name[8];
-int size;
-int filepos;
-};</blockquote>
+    char name[8];
+    int size;
+    int filepos;
+};
+{% endhighlight %}
 
 
 filelump_t показывает на область файла filepos, где хранится бинарный блоб с именем name и размером size байт. В doom.wad около 2 тысяч таких лампов. Каждый ламп хранится бинарным блобом с какой-то своей структурой, про которую wad файл ничего не знает.

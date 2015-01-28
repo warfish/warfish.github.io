@@ -10,7 +10,7 @@ tags:
 - doom-uefi
 ---
 
-[![Screen Shot 2013-10-12 at 9.28.07 PM](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-12-at-9-28-07-pm.png?w=300)](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-12-at-9-28-07-pm.png)
+[![Screen Shot 2013-10-12 at 9.28.07 PM]({{ site.images_root }}/screen-shot-2013-10-12-at-9-28-07-pm.png)]({{ site.images_root }}/screen-shot-2013-10-12-at-9-28-07-pm.png)
 
 Проблемы:
 

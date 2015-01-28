@@ -12,7 +12,7 @@ tags:
 
 Yeah!
 
-[![Screen Shot 2013-10-09 at 12.48.46 AM](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-09-at-12-48-46-am.png?w=300)](http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-09-at-12-48-46-am.png)
+[![Screen Shot 2013-10-09 at 12.48.46 AM]({{ site.images_root }}/screen-shot-2013-10-09-at-12-48-46-am.png)]({{ site.images_root }}//screen-shot-2013-10-09-at-12-48-46-am.png)
 
 
 

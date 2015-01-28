@@ -15,8 +15,7 @@ tags:
 Меня всегда интересовало, почему DuetPkg и Nt32Pkg, судя по их DSC файлам, по большей части состоят из бинарных модулей, ничего не знающих про эмуляцию. Наример оба эмулятора использую общую реализацию всего DXE рантайма. Как такое работает?
 
 Согласно спецификации UEFI инициализация платформы и подготовка ее к загрузке ОС осуществляется в несколько стадий:
-
-[![uefifig6[1]](http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif?w=300)](http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif)
+<a href="{{ site.baseurl }}public/images/uefifig61.gif"><img src="{{ site.baseurl }}public/images/uefifig61.gif"></img></a>
 
 Весь API, который описан в UEFI спецификации становится (полностью) доступен на стадии BDS (Boot Device Selection), когда начинает работать boot manager. Реализация этого API и его инициализация происходит, в общем случае, на стадии DXE - driver execution environment. На стадии DXE работаю несколько основных компонентов, которые нас интересуют в контексте темы поста:
 
@@ -35,7 +34,7 @@ tags:
 
 DXE Core реализует EFI_SYSTEM_TABLE и все сервисы из EFI_BOOT_SERVICES и EFI_RUNTIME_SERVICES за счет опоры на EFI architecture protocols:
 
-[![dxe+foundation+architectural[1]](http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png?w=300)](http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png)
+<a href="{{ site.baseurl }}public/images/dxefoundationarchitectural1.png"><img src="{{ site.baseurl }}public/images/dxefoundationarchitectural1.png"></img></a>
 
 Картинка выше перегружена деталями, но в центре находится реализация DXE, которая зависит от набора архитектурных протоколов таких как EFI_CPU_ARCH_PROTOCOL, EFI_TIMER_ARCH_PROTOCOL и так далее. Эти протоколы описаны в PI спецификации и немногим отличаются от протоколов из UEFI спецификации. Различия есть в драйверах, которые их реализуют: это обычные DXE boot service / DXE runtime service драйвера, однако т.к. опубликованные ими протоколы являются опорой для реализации основных boot и runtime сервисов, то они не могут рассчитывать на их полный набор на некоторых этапах своего выполнения.
 

@@ -12,16 +12,17 @@ tags:
 
 Структура текстурного патча из сурсов дума. Подразумевается что эти структуры хранятся в ресурсном образе as is, код подгружает их читая sizeof(maptexture_t) из файла:
 
-
-<blockquote>struct maptexture_t
+{% highlight c %}
+struct maptexture_t
 {
-char name[8];
-boolean masked;
-short width;
-short height;
-void** obsolete;
-patch_t patches[1];
-};</blockquote>
+    char name[8];
+    bool masked;
+    short width;
+    short height;
+    void** obsolete;
+    patch_t patches[1];
+};
+{% endhighlight %}
 
 
 Естественно собираясь для 64-х битного уефая размер этой структуры едет сразу по нескольким полям.
