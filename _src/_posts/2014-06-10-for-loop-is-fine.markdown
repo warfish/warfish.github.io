@@ -10,61 +10,41 @@ wordpress_id: 399
 
 Часто приходится писать такой код:
 
-
-<blockquote>
-
->     
->     void ProcessAll(element_t* elements, size_t total)
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             ProcessElement(elements[i]);
->         }
->     }
-> 
-> 
-</blockquote>
-
+{% highlight c %}
+void ProcessAll(element_t* elements, size_t total)
+{
+    for (size_t i = 0; i < total; ++i)
+    {
+        ProcessElement(elements[i]);
+    }
+}
+{% endhighlight %}
 
 So far so good. Но затем нужно обычно написать еще нечто вроде:
 
 
-<blockquote>
-
->     
->     void PrintAll(element_t* elements, size_t total)
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             PrintElement(elements[i]);
->         }
->     }
-> 
-> 
-</blockquote>
+{% highlight c %}
+void PrintAll(element_t* elements, size_t total)
+{
+    for (size_t i = 0; i < total; ++i)
+    {
+        PrintElement(elements[i]);
+    }
+}
+{% endhighlight %}
 
 
 И тут срабатывает инстинкт "где-то я это уже видел", и, вспоминая какой-нибудь SICP, хочется выделить итерацию отдельно и написать:
 
-
-<blockquote>
-
->     
->     void ForEachElement(element_t* elements, size_t total, 
->                         ElementCallbackFptr callback, void* context)
-> 
-> 
-
->     
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             callback(elements[i], context);
->         }
->     }
-> 
-> 
-</blockquote>
+{% highlight c %}
+void ForEachElement(element_t* elements, size_t total, ElementCallbackFptr callback, void* context)
+{
+    for (size_t i = 0; i < total; ++i)
+    {
+        callback(elements[i], context);
+    }
+}
+{% endhighlight %}
 
 
 И начать переписывать ProcessAll и PrintAll через ForEachElement + callback собирая со стека весь контекст в context.
