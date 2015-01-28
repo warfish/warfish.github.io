@@ -35,10 +35,7 @@
           <a href="/" title="Home">My worklog</a>
           <small><a href="https://github.com/warfish">GitHub</a></small>
           <small><a href="/archive/">Archive</a></small>
-          <small><a href="/tags/">Tags</a></small>
         </h3>
-
-
       </header>
 
       <main>
@@ -47,56 +44,33 @@
   <time datetime="2014-06-11T00:00:53+07:00" class="post-date">11 Jun 2014</time>
   <p>Часто приходится писать такой код:</p>
 
-<blockquote>
-
->     
->     void ProcessAll(element_t* elements, size_t total)
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             ProcessElement(elements[i]);
->         }
->     }
-> 
-> 
-</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">ProcessAll</span><span class="p">(</span><span class="kt">element_t</span><span class="o">*</span> <span class="n">elements</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ProcessElement</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 
 <p>So far so good. Но затем нужно обычно написать еще нечто вроде:</p>
 
-<blockquote>
-
->     
->     void PrintAll(element_t* elements, size_t total)
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             PrintElement(elements[i]);
->         }
->     }
-> 
-> 
-</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">PrintAll</span><span class="p">(</span><span class="kt">element_t</span><span class="o">*</span> <span class="n">elements</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">PrintElement</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 
 <p>И тут срабатывает инстинкт &quot;где-то я это уже видел&quot;, и, вспоминая какой-нибудь SICP, хочется выделить итерацию отдельно и написать:</p>
 
-<blockquote>
-
->     
->     void ForEachElement(element_t* elements, size_t total, 
->                         ElementCallbackFptr callback, void* context)
-> 
-> 
-
->     
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             callback(elements[i], context);
->         }
->     }
-> 
-> 
-</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">ForEachElement</span><span class="p">(</span><span class="kt">element_t</span><span class="o">*</span> <span class="n">elements</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total</span><span class="p">,</span> <span class="n">ElementCallbackFptr</span> <span class="n">callback</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">callback</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">context</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 
 <p>И начать переписывать ProcessAll и PrintAll через ForEachElement + callback собирая со стека весь контекст в context.
 Такой код выглядит красиво, общее абстрагировано, частное параметризировано.</p>
@@ -126,15 +100,6 @@ Callback отдельная функция, а не код внутри цикл
     
       <li>
         <h3>
-          <a href="//2015/01/27/hello-github-pages/">
-            Hello github.io
-            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
           <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
             Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
             <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
@@ -151,6 +116,15 @@ Callback отдельная функция, а не код внутри цикл
         </h3>
       </li>
     
+      <li>
+        <h3>
+          <a href="//2014/09/12/smm-d0b1d0b0d0b3d0b8-d0b1d0b8d0bed181d0b0/">
+            SMM баги биоса
+            <small><time datetime="2014-09-12T10:59:05+07:00">12 Sep 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
   </ul>
 </aside -->
 
@@ -158,33 +132,12 @@ Callback отдельная функция, а не код внутри цикл
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T17:57:35+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T18:38:46+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
+
     </div>
 
-    <!-- div class="sidebar">
-  
-  <a style="font-size: 190%" href="/BIOS/">BIOS</a>
-  
-  <a style="font-size: 130%" href="/device state/">device state</a>
-  
-  <a style="font-size: 240%" href="/preboot/">preboot</a>
-  
-  <a style="font-size: 120%" href="/unrealistic ideas/">unrealistic ideas</a>
-  
-  <a style="font-size: 280%" href="/UEFI/">UEFI</a>
-  
-  <a style="font-size: 130%" href="/crypto/">crypto</a>
-  
-  <a style="font-size: 200%" href="/doom-uefi/">doom-uefi</a>
-  
-  <a style="font-size: 120%" href="/crazy ideas/">crazy ideas</a>
-  
-  <a style="font-size: 110%" href="/github/">github</a>
-  
-  <a style="font-size: 110%" href="/meta/">meta</a>
-  
-    </div -->
+
   </body>
 </html>

@@ -35,45 +35,17 @@
           <a href="/" title="Home">My worklog</a>
           <small><a href="https://github.com/warfish">GitHub</a></small>
           <small><a href="/archive/">Archive</a></small>
-          <small><a href="/tags/">Tags</a></small>
         </h3>
-
-
       </header>
 
       <main>
-        <div class="posts">
-  
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/27/hello-github-pages/">
-        Hello github.io
-      </a>
-    </h1>
+        <div class="wrapper">
+  <div class="center">
 
-    <time datetime="2015-01-27T00:00:00+06:00" class="post-date">27 Jan 2015</time>
-
-    <p>Hi, here&#39;s some code </p>
-
-<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
-
+    <div class="posts">
     
-    <span class="tags">
-        
-        <a href="/github/">github</a>
-        
-        <a href="/meta/">meta</a>
-        
-    </span>
-
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
         Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
       </a>
@@ -97,13 +69,13 @@
 
     
     <span class="tags">
-        
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
         Виртуализация
       </a>
@@ -138,13 +110,13 @@
 
     
     <span class="tags">
-        
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/09/12/smm-d0b1d0b0d0b3d0b8-d0b1d0b8d0bed181d0b0/">
         SMM баги биоса
       </a>
@@ -169,13 +141,13 @@
 
     
     <span class="tags">
-        
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/09/01/ida-pro-needs-a-reality-check/">
         IDA Pro needs a reality check
       </a>
@@ -193,13 +165,13 @@
 
     
     <span class="tags">
-        
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/06/11/for-loop-is-fine/">
         For loop is fine
       </a>
@@ -209,56 +181,33 @@
 
     <p>Часто приходится писать такой код:</p>
 
-<blockquote>
-
->     
->     void ProcessAll(element_t* elements, size_t total)
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             ProcessElement(elements[i]);
->         }
->     }
-> 
-> 
-</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">ProcessAll</span><span class="p">(</span><span class="kt">element_t</span><span class="o">*</span> <span class="n">elements</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ProcessElement</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 
 <p>So far so good. Но затем нужно обычно написать еще нечто вроде:</p>
 
-<blockquote>
-
->     
->     void PrintAll(element_t* elements, size_t total)
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             PrintElement(elements[i]);
->         }
->     }
-> 
-> 
-</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">PrintAll</span><span class="p">(</span><span class="kt">element_t</span><span class="o">*</span> <span class="n">elements</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">PrintElement</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 
 <p>И тут срабатывает инстинкт &quot;где-то я это уже видел&quot;, и, вспоминая какой-нибудь SICP, хочется выделить итерацию отдельно и написать:</p>
 
-<blockquote>
-
->     
->     void ForEachElement(element_t* elements, size_t total, 
->                         ElementCallbackFptr callback, void* context)
-> 
-> 
-
->     
->     {
->         for (size_t i = 0; i < total; ++i)
->         {
->             callback(elements[i], context);
->         }
->     }
-> 
-> 
-</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">ForEachElement</span><span class="p">(</span><span class="kt">element_t</span><span class="o">*</span> <span class="n">elements</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">total</span><span class="p">,</span> <span class="n">ElementCallbackFptr</span> <span class="n">callback</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">callback</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">context</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 
 <p>И начать переписывать ProcessAll и PrintAll через ForEachElement + callback собирая со стека весь контекст в context.
 Такой код выглядит красиво, общее абстрагировано, частное параметризировано.</p>
@@ -279,13 +228,13 @@ Callback отдельная функция, а не код внутри цикл
 
     
     <span class="tags">
-        
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/06/06/linux-on-efi-wo-reboot/">
         Possible solution to Linux on EFI w/o reboot
       </a>
@@ -321,15 +270,15 @@ Callback отдельная функция, а не код внутри цикл
 
     
     <span class="tags">
-        
-        <a href="/crazy ideas/">crazy ideas</a>
-        
+      
+      <a href="/crazy ideas/">crazy ideas</a>
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/04/25/d0bfd0bed187d0b5d0bcd183-c-d0b2-d18fd0b4d180d0b0d185-d18dd182d0be-d0bfd0bbd0bed185d0be/">
         Почему C++ в ядрах это плохо
       </a>
@@ -345,13 +294,13 @@ Callback отдельная функция, а не код внутри цикл
 
     
     <span class="tags">
-        
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/03/17/efi-toolkit/">
         EFI toolkit
       </a>
@@ -374,15 +323,15 @@ Callback отдельная функция, а не код внутри цикл
 
     
     <span class="tags">
-        
-        <a href="/UEFI/">UEFI</a>
-        
+      
+      <a href="/UEFI/">UEFI</a>
+      
     </span>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2014/03/11/efi-libc/">
         EFI libc
       </a>
@@ -402,55 +351,138 @@ Callback отдельная функция, а не код внутри цикл
 
     
     <span class="tags">
-        
-        <a href="/UEFI/">UEFI</a>
-        
+      
+      <a href="/UEFI/">UEFI</a>
+      
     </span>
 
-  </article>
-  
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
+      <a href="/2014/01/18/uefi-architecture-protocols-and-portable-dxe-core/">
+        [UEFI] Architecture protocols and portable DXE Core
+      </a>
+    </h1>
+
+    <time datetime="2014-01-18T17:53:25+07:00" class="post-date">18 Jan 2014</time>
+
+    <p>Речь пойдет об особенности PI спецификации - архитектурных протоколах, которые осуществляют портабельность DXE core и позволяют переносить всю реализацию DXE стадии на платформы эмуляции UEFI, такие как legacy BIOS (EDK/<a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/">DuetPkg</a>) и Win32 (EDK/<a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/Nt32Pkg/">Nt32Pkg</a>).</p>
+
+<p>Меня всегда интересовало, почему DuetPkg и Nt32Pkg, судя по их DSC файлам, по большей части состоят из бинарных модулей, ничего не знающих про эмуляцию. Наример оба эмулятора использую общую реализацию всего DXE рантайма. Как такое работает?</p>
+
+<p>Согласно спецификации UEFI инициализация платформы и подготовка ее к загрузке ОС осуществляется в несколько стадий:</p>
+
+<p><a href="http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif"><img src="http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif?w=300" alt="uefifig6[1]"></a></p>
+
+<p>Весь API, который описан в UEFI спецификации становится (полностью) доступен на стадии BDS (Boot Device Selection), когда начинает работать boot manager. Реализация этого API и его инициализация происходит, в общем случае, на стадии DXE - driver execution environment. На стадии DXE работаю несколько основных компонентов, которые нас интересуют в контексте темы поста:</p>
+
+<ul>
+<li><p>DXE Core
+Ядро DXE стадии, получает управление после PEI, разворачивает реализацию базы данных хендлов.</p></li>
+<li><p>DXE Dispatcher
+Занимается загрузкой драйверов из firmware volume, который был проинициализирован на стадии PEI.</p></li>
+</ul>
+
+<p>Референсную реализацию DXE можно найти в <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/MdeModulePkg/Core/Dxe/">EDK/MdeModulePkg/Core/Dxe</a>.</p>
+
+<p>DXE Core реализует EFI<em>SYSTEM</em>TABLE и все сервисы из EFI<em>BOOT</em>SERVICES и EFI<em>RUNTIME</em>SERVICES за счет опоры на EFI architecture protocols:</p>
+
+<p><a href="http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png"><img src="http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png?w=300" alt="dxe+foundation+architectural[1]"></a></p>
+
+<p>Картинка выше перегружена деталями, но в центре находится реализация DXE, которая зависит от набора архитектурных протоколов таких как EFI<em>CPU</em>ARCH<em>PROTOCOL, EFI</em>TIMER<em>ARCH</em>PROTOCOL и так далее. Эти протоколы описаны в PI спецификации и немногим отличаются от протоколов из UEFI спецификации. Различия есть в драйверах, которые их реализуют: это обычные DXE boot service / DXE runtime service драйвера, однако т.к. опубликованные ими протоколы являются опорой для реализации основных boot и runtime сервисов, то они не могут рассчитывать на их полный набор на некоторых этапах своего выполнения.</p>
+
+<p>Становится понятной роль архитектурных протоколов - они абстрагируют базовое железо конкретной архитектурной платформы и позволяют коду в DXE core опираться на эти абстракции в реализации основных сервисов, например:</p>
+
+<ul>
+<li><p>Реализация рантайм сервиса <a href="http://wiki.phoenix.com/wiki/index.php/EFI_RUNTIME_SERVICES#GetTime.28.29">EFI<em>RUNTIME</em>SERVICES::GetTime()</a> опирается на архитектурный протокол EFI<em>REAL</em>TIME<em>CLOCK</em>ARCH_PROTOCOL для доступа к аппаратному устройству wall-time clock</p></li>
+<li><p>Вся реализация ивентов в EFI<em>BOOT</em>SERVICES использует EFI<em>TIMER</em>ARCH_PROTOCOL для генерирования периодических прерываний по таймеру.</p></li>
+<li><p>EFI<em>CPU</em>ARCH_PROTOCOL используется для синхронизации кешей процессора и реализации сервисов управления памятью</p></li>
+</ul>
+
+<p>Драйверы, реализующие эти протоколы, как правило находятся в firmware volume, который инициализируется на стадии PEI и информация о котором передается в DXE Core посредством списка Hand-off Block структур (HOB list), что показано в верхней части картинки выше. Я не буду сейчас заострять внимание на деталях HOB списка, скажу только что это каждый HOB представляет из себя блок данных и GUID, который позволяет интерпретировать эти данные различными клиентами на стадии инициализации DXE. При помощи HOB передается информация о доступной памяти, memory mapped firmware volume и т.п.</p>
+
+<p>Firmware volume был упомянут уже не раз, но его определение так и не было дано до сих пор. Firmware volume (FV) это структурированная база данных исполняемых модулей DXE, т.е. драйверов и приложений. База данных FV адресует образы по GUIDу и хранит информацию о зависимостях между различными модулями, а так же т.н. a priori list - список GUIDов образов, которые нужно загрузить при инициализации DXE в строго определенной последовательности. Драйвера архитектурных протоколов как правило и находятся в a priori list. Физически на реальной системе FV находятся в ROM и доступ к нему предоставляется через замапленый диапазон адресов физический памяти. Маппинг осуществляется на стадии PEI и информация о нем передается в HOB листе.</p>
+
+<p>Таким образом при старте DXE код может опираться только на рабочую физическую память, проинициализированную на стадии PEI и описанную в HOB листе. Этого достаточно  для инициализации базы данных хендлов, доступа к FV, загрузке драйверов из FV посредством DXE Dispatcher и инициализацию всех UEFI сервисов.</p>
+
+<p>Становится понятным список задач, которые должен выполнить эмулятор, чтобы загрузить общий код DXE:</p>
+
+<ul>
+<li><p>Реализация всех архитектурных протоколов, на который опирается DXE Core</p></li>
+<li><p>Реализация firmware volume, доступа к нему и загрузку бинарных образов в среду эмуляции.</p></li>
+<li><p>Реализация дополнительных драйверов, таких как block io, GOP, консолей и т.п.</p></li>
+<li><p>Формарование корректного HOB листа и передача управления в DXE.</p></li>
+</ul>
+
+<p>В этом и заключается полезная нагрузка DuetPkg и Nt32Pkg. К примеру Nt32Pkg реализует архитектурные протоколы и драйвера основных UEFI протоколов через сервисы Win32 и хранит FV как папку на файловой системе предоставляя доступ через <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/Nt32Pkg/FvbServicesRuntimeDxe/">FvbServiceRuntimeDxe</a> драйвер. Реализацию аналогичных компонентов можно найти и в DuetPkg, хотя там все сложнее из-за специфики эмулятора UEFI поверх legacy BIOS, но общая схема остается неизменной.</p>
+
+    
+    <span class="tags">
+      
+      <a href="/UEFI/">UEFI</a>
+      
+    </span>
+
+    </article>
+    
+    </div>
+
+    <div class="pagination">
+      
+      <a class="pagination-item older" href="/page2">Older</a>
+      
+      
+      <span class="pagination-item newer">Newer</span>
+      
+    </div>
+
+  </div>
+      
+  <div class="sidebar">
+    <ul class="post-list">
+      
+      <!-- a style="font-size: 182%" href="/BIOS/">BIOS</a -->
+      <li><a href="/BIOS/">BIOS</a></li>
+      
+      <!-- a style="font-size: 107%" href="/device state/">device state</a -->
+      <li><a href="/device state/">device state</a></li>
+      
+      <!-- a style="font-size: 245%" href="/preboot/">preboot</a -->
+      <li><a href="/preboot/">preboot</a></li>
+      
+      <!-- a style="font-size: 95%" href="/unrealistic ideas/">unrealistic ideas</a -->
+      <li><a href="/unrealistic ideas/">unrealistic ideas</a></li>
+      
+      <!-- a style="font-size: 295%" href="/UEFI/">UEFI</a -->
+      <li><a href="/UEFI/">UEFI</a></li>
+      
+      <!-- a style="font-size: 107%" href="/crypto/">crypto</a -->
+      <li><a href="/crypto/">crypto</a></li>
+      
+      <!-- a style="font-size: 195%" href="/doom-uefi/">doom-uefi</a -->
+      <li><a href="/doom-uefi/">doom-uefi</a></li>
+      
+      <!-- a style="font-size: 95%" href="/crazy ideas/">crazy ideas</a -->
+      <li><a href="/crazy ideas/">crazy ideas</a></li>
+      
+    </ul>
+  </div>
+
 </div>
 
-<div class="pagination">
-  
-    <a class="pagination-item older" href="/page2">Older</a>
-  
-  
-    <span class="pagination-item newer">Newer</span>
-  
-</div>
+
 
       </main>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T17:57:35+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T18:38:46+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
+
     </div>
 
-    <!-- div class="sidebar">
-  
-  <a style="font-size: 190%" href="/BIOS/">BIOS</a>
-  
-  <a style="font-size: 130%" href="/device state/">device state</a>
-  
-  <a style="font-size: 240%" href="/preboot/">preboot</a>
-  
-  <a style="font-size: 120%" href="/unrealistic ideas/">unrealistic ideas</a>
-  
-  <a style="font-size: 280%" href="/UEFI/">UEFI</a>
-  
-  <a style="font-size: 130%" href="/crypto/">crypto</a>
-  
-  <a style="font-size: 200%" href="/doom-uefi/">doom-uefi</a>
-  
-  <a style="font-size: 120%" href="/crazy ideas/">crazy ideas</a>
-  
-  <a style="font-size: 110%" href="/github/">github</a>
-  
-  <a style="font-size: 110%" href="/meta/">meta</a>
-  
-    </div -->
+
   </body>
 </html>
