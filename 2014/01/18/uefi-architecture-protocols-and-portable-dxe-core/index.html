@@ -61,18 +61,18 @@
 
 <p>Референсную реализацию DXE можно найти в <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/MdeModulePkg/Core/Dxe/">EDK/MdeModulePkg/Core/Dxe</a>.</p>
 
-<p>DXE Core реализует EFI<em>SYSTEM</em>TABLE и все сервисы из EFI<em>BOOT</em>SERVICES и EFI<em>RUNTIME</em>SERVICES за счет опоры на EFI architecture protocols:</p>
+<p>DXE Core реализует EFI_SYSTEM_TABLE и все сервисы из EFI_BOOT_SERVICES и EFI_RUNTIME_SERVICES за счет опоры на EFI architecture protocols:</p>
 
 <p><a href="/public/images/dxefoundationarchitectural1.png"><img src="/public/images/dxefoundationarchitectural1.png"></img></a></p>
 
-<p>Картинка выше перегружена деталями, но в центре находится реализация DXE, которая зависит от набора архитектурных протоколов таких как EFI<em>CPU</em>ARCH<em>PROTOCOL, EFI</em>TIMER<em>ARCH</em>PROTOCOL и так далее. Эти протоколы описаны в PI спецификации и немногим отличаются от протоколов из UEFI спецификации. Различия есть в драйверах, которые их реализуют: это обычные DXE boot service / DXE runtime service драйвера, однако т.к. опубликованные ими протоколы являются опорой для реализации основных boot и runtime сервисов, то они не могут рассчитывать на их полный набор на некоторых этапах своего выполнения.</p>
+<p>Картинка выше перегружена деталями, но в центре находится реализация DXE, которая зависит от набора архитектурных протоколов таких как EFI_CPU_ARCH_PROTOCOL, EFI_TIMER_ARCH_PROTOCOL и так далее. Эти протоколы описаны в PI спецификации и немногим отличаются от протоколов из UEFI спецификации. Различия есть в драйверах, которые их реализуют: это обычные DXE boot service / DXE runtime service драйвера, однако т.к. опубликованные ими протоколы являются опорой для реализации основных boot и runtime сервисов, то они не могут рассчитывать на их полный набор на некоторых этапах своего выполнения.</p>
 
 <p>Становится понятной роль архитектурных протоколов - они абстрагируют базовое железо конкретной архитектурной платформы и позволяют коду в DXE core опираться на эти абстракции в реализации основных сервисов, например:</p>
 
 <ul>
-<li><p>Реализация рантайм сервиса <a href="http://wiki.phoenix.com/wiki/index.php/EFI_RUNTIME_SERVICES#GetTime.28.29">EFI<em>RUNTIME</em>SERVICES::GetTime()</a> опирается на архитектурный протокол EFI<em>REAL</em>TIME<em>CLOCK</em>ARCH_PROTOCOL для доступа к аппаратному устройству wall-time clock</p></li>
-<li><p>Вся реализация ивентов в EFI<em>BOOT</em>SERVICES использует EFI<em>TIMER</em>ARCH_PROTOCOL для генерирования периодических прерываний по таймеру.</p></li>
-<li><p>EFI<em>CPU</em>ARCH_PROTOCOL используется для синхронизации кешей процессора и реализации сервисов управления памятью</p></li>
+<li><p>Реализация рантайм сервиса <a href="http://wiki.phoenix.com/wiki/index.php/EFI_RUNTIME_SERVICES#GetTime.28.29">EFI_RUNTIME_SERVICES::GetTime()</a> опирается на архитектурный протокол EFI_REAL_TIME_CLOCK_ARCH_PROTOCOL для доступа к аппаратному устройству wall-time clock</p></li>
+<li><p>Вся реализация ивентов в EFI_BOOT_SERVICES использует EFI_TIMER_ARCH_PROTOCOL для генерирования периодических прерываний по таймеру.</p></li>
+<li><p>EFI_CPU_ARCH_PROTOCOL используется для синхронизации кешей процессора и реализации сервисов управления памятью</p></li>
 </ul>
 
 <p>Драйверы, реализующие эти протоколы, как правило находятся в firmware volume, который инициализируется на стадии PEI и информация о котором передается в DXE Core посредством списка Hand-off Block структур (HOB list), что показано в верхней части картинки выше. Я не буду сейчас заострять внимание на деталях HOB списка, скажу только что это каждый HOB представляет из себя блок данных и GUID, который позволяет интерпретировать эти данные различными клиентами на стадии инициализации DXE. При помощи HOB передается информация о доступной памяти, memory mapped firmware volume и т.п.</p>
@@ -154,7 +154,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T19:42:30+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T22:56:05+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

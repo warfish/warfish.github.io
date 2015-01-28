@@ -53,14 +53,14 @@
 
 <p>Больше инфы по каждому варианту можно найти в вики проекта: <a href="https://github.com/OpenSC/OpenSC/wiki/Creating-applications-with-smart-card-support#low-level-smart-card-access">https://github.com/OpenSC/OpenSC/wiki/Creating-applications-with-smart-card-support#low-level-smart-card-access</a></p>
 
-<p>Все трое это внешние для OpenSC реализации, которые она адаптирует через сишный вариант полиморфизма в <a href="https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/opensc.h#L419">sc<em>reader</em>operations</a>. Я кстати очень люблю такой Pure C полиморфизм, но щас не об этом. Подход должен быть знаком сразу всем, кто писал драйвера для линуксового ядра.</p>
+<p>Все трое это внешние для OpenSC реализации, которые она адаптирует через сишный вариант полиморфизма в <a href="https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/opensc.h#L419">sc_reader_operations</a>. Я кстати очень люблю такой Pure C полиморфизм, но щас не об этом. Подход должен быть знаком сразу всем, кто писал драйвера для линуксового ядра.</p>
 
 <p>Так или иначе, по моему не самому глубокому 30-ти минутному вниканию я делаю вывод, что портировать на UEFI нужно будет реализацию одного из трех вариантов выше, а не самой OpenSC. У конкурентов на линуксе я почти всегда видел пару libopensc/libopenct, так что вот.</p>
 
 <p>Драйвер для eToken PRO находится здесь:<a href="https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/card-cardos.c">https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/card-cardos.c</a></p>
 
 <p>Generic USB слой:<a href="https://github.com/OpenSC/openct/blob/master/src/ifd/usb.c">https://github.com/OpenSC/openct/blob/master/src/ifd/usb.c</a>
-Опирается на платформенно-зависимые ifd<em>sysdep</em>usb_*. Реализация для линукса:<a href="https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c">https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c</a></p>
+Опирается на платформенно-зависимые ifd_sysdep_usb_*. Реализация для линукса:<a href="https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c">https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c</a></p>
 
   <span class="tags">
       
@@ -124,7 +124,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T19:42:30+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T22:56:05+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

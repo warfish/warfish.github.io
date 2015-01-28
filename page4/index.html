@@ -214,7 +214,7 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
 <p>Existing libusb ports are found in <a href="http://git.libusb.org/?p=libusb.git;a=tree;f=libusb/os;h=1ec9613c0fc4facf6e9217af4130f02387e2b470;hb=7634714aa696175b08016b6f2185a75a2f55a113;js=1">libusb/os folder</a></p>
 
-<p>libusbi.h contains a very well documented interface that should be implemented on a new platform: <a href="http://git.libusb.org/?p=libusb.git;a=blob;f=libusb/libusbi.h;h=3b602d28ca4cae7577bcdcabddccaeb04c0a79cb;hb=7634714aa696175b08016b6f2185a75a2f55a113;js=1#l468">usbi<em>os</em>backend</a></p>
+<p>libusbi.h contains a very well documented interface that should be implemented on a new platform: <a href="http://git.libusb.org/?p=libusb.git;a=blob;f=libusb/libusbi.h;h=3b602d28ca4cae7577bcdcabddccaeb04c0a79cb;hb=7634714aa696175b08016b6f2185a75a2f55a113;js=1#l468">usbi_os_backend</a></p>
 
     
     <span class="tags">
@@ -237,13 +237,13 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
     <p>Чтобы портировать связку libopensc/libopenct нужно:</p>
 
 <ol>
-<li><p>Затащить StdLib. В EDK есть реализация: <a href="http://sourceforge.net/p/tianocore/edk2/ci/master/tree/StdLib/">http://sourceforge.net/p/tianocore/edk2/ci/master/tree/StdLib/</a>. Есть небольшое неудобство - ванильная реализация StdLib в EDK линкуется только с UEFI<em>APPLICATION (а не DXE</em>DRIVER). Поэтому PBA <em>везде</em> должен быть аппликейшеном. Либо можно распилить StdLib на части и копилировать сишники. Тоже вариант.</p></li>
-<li><p>Написать реализацию функций ifd<em>sysdep</em>usb_* в OpenCT. Вот пример порта на <a href="http://www.libusb.org/">libusb</a>/Linux: <a href="https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c">https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c</a>.</p></li>
+<li><p>Затащить StdLib. В EDK есть реализация: <a href="http://sourceforge.net/p/tianocore/edk2/ci/master/tree/StdLib/">http://sourceforge.net/p/tianocore/edk2/ci/master/tree/StdLib/</a>. Есть небольшое неудобство - ванильная реализация StdLib в EDK линкуется только с UEFI_APPLICATION (а не DXE_DRIVER). Поэтому PBA <em>везде</em> должен быть аппликейшеном. Либо можно распилить StdLib на части и копилировать сишники. Тоже вариант.</p></li>
+<li><p>Написать реализацию функций ifd_sysdep_usb_* в OpenCT. Вот пример порта на <a href="http://www.libusb.org/">libusb</a>/Linux: <a href="https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c">https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c</a>.</p></li>
 <li><p>Вытравить зависимости от файловой системы в вспомогательном коде OpenCT. Например у него есть конфиг, который он при инициализации парсит из файла и т.д.</p></li>
 <li><p>Выкинуть все &quot;ненужное&quot;. Например общение с токенами по серийному порту.</p></li>
 </ol>
 
-<p>Вместо пункта 2 (порт ifd<em>sysdep</em>usb_*) можно подойти к вопросу фундаментальнее - портировать libusb. Эта либа своего рода стандартный API доступа к USB устройствам на линуксе. На нее портировано много всего, включая OpenCT. Если портануть ее, то это дает гибкость, можно не портировать USB стек второй раз в какой-нибудь другой либе. Но это медленнее, потому что libusb больше.</p>
+<p>Вместо пункта 2 (порт ifd_sysdep_usb_*) можно подойти к вопросу фундаментальнее - портировать libusb. Эта либа своего рода стандартный API доступа к USB устройствам на линуксе. На нее портировано много всего, включая OpenCT. Если портануть ее, то это дает гибкость, можно не портировать USB стек второй раз в какой-нибудь другой либе. Но это медленнее, потому что libusb больше.</p>
 
     
     <span class="tags">
@@ -275,14 +275,14 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
 <p>Больше инфы по каждому варианту можно найти в вики проекта: <a href="https://github.com/OpenSC/OpenSC/wiki/Creating-applications-with-smart-card-support#low-level-smart-card-access">https://github.com/OpenSC/OpenSC/wiki/Creating-applications-with-smart-card-support#low-level-smart-card-access</a></p>
 
-<p>Все трое это внешние для OpenSC реализации, которые она адаптирует через сишный вариант полиморфизма в <a href="https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/opensc.h#L419">sc<em>reader</em>operations</a>. Я кстати очень люблю такой Pure C полиморфизм, но щас не об этом. Подход должен быть знаком сразу всем, кто писал драйвера для линуксового ядра.</p>
+<p>Все трое это внешние для OpenSC реализации, которые она адаптирует через сишный вариант полиморфизма в <a href="https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/opensc.h#L419">sc_reader_operations</a>. Я кстати очень люблю такой Pure C полиморфизм, но щас не об этом. Подход должен быть знаком сразу всем, кто писал драйвера для линуксового ядра.</p>
 
 <p>Так или иначе, по моему не самому глубокому 30-ти минутному вниканию я делаю вывод, что портировать на UEFI нужно будет реализацию одного из трех вариантов выше, а не самой OpenSC. У конкурентов на линуксе я почти всегда видел пару libopensc/libopenct, так что вот.</p>
 
 <p>Драйвер для eToken PRO находится здесь:<a href="https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/card-cardos.c">https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/card-cardos.c</a></p>
 
 <p>Generic USB слой:<a href="https://github.com/OpenSC/openct/blob/master/src/ifd/usb.c">https://github.com/OpenSC/openct/blob/master/src/ifd/usb.c</a>
-Опирается на платформенно-зависимые ifd<em>sysdep</em>usb_*. Реализация для линукса:<a href="https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c">https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c</a></p>
+Опирается на платформенно-зависимые ifd_sysdep_usb_*. Реализация для линукса:<a href="https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c">https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c</a></p>
 
     
     <span class="tags">
@@ -311,13 +311,13 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
 <p>Что на данный момент удалось получить от EDK/Duet.</p>
 
-<p>Сначала о выводе юникода на экран. Вообще весь UEFI и EDK юникодные (UTF16). Для вывода юникодных строк на дисплей UEFI предоставляет описание шрифта: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_SIMPLE_FONT_PACKAGE_HDR">http://wiki.phoenix.com/wiki/index.php/EFI<em>HII</em>SIMPLE<em>FONT</em>PACKAGE_HDR</a>. Это по сути таблица маппинга UTF16 кода символа на глиф размером либо 9x19 либо 16x19 пикселей. EDK предоставляет драйвер графической консоли, который учитывает наборы этих шрифтов и рендерит каждый символ в UTF16 строке согласно ее глифу, учитывая переносы строк, слияние границ символов и т.д. И это достаточно много очень противного кода.</p>
+<p>Сначала о выводе юникода на экран. Вообще весь UEFI и EDK юникодные (UTF16). Для вывода юникодных строк на дисплей UEFI предоставляет описание шрифта: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_SIMPLE_FONT_PACKAGE_HDR">http://wiki.phoenix.com/wiki/index.php/EFI_HII_SIMPLE_FONT_PACKAGE_HDR</a>. Это по сути таблица маппинга UTF16 кода символа на глиф размером либо 9x19 либо 16x19 пикселей. EDK предоставляет драйвер графической консоли, который учитывает наборы этих шрифтов и рендерит каждый символ в UTF16 строке согласно ее глифу, учитывая переносы строк, слияние границ символов и т.д. И это достаточно много очень противного кода.</p>
 
-<p>Модель для разработчика получается такая: чтобы поддержать печать текста например на русском языке надо изготовить таблицу глифов для каждого UTF16 символа этого языка, загрузить ее в рантайме и автомагически вся печать на дисплей будет работать. Есть также более продвинутое описание шрифтов, не привязанное к размеру глифа: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_FONT_PACKAGE_HDR">http://wiki.phoenix.com/wiki/index.php/EFI<em>HII</em>FONT<em>PACKAGE</em>HDR</a>.</p>
+<p>Модель для разработчика получается такая: чтобы поддержать печать текста например на русском языке надо изготовить таблицу глифов для каждого UTF16 символа этого языка, загрузить ее в рантайме и автомагически вся печать на дисплей будет работать. Есть также более продвинутое описание шрифтов, не привязанное к размеру глифа: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_FONT_PACKAGE_HDR">http://wiki.phoenix.com/wiki/index.php/EFI_HII_FONT_PACKAGE_HDR</a>.</p>
 
 <p>Никто не запрещает поступить как grub2 - сделать большой шрифт со всеми нужными языками в одном пакете и грузить его целиком. Никто не запрещает взять векторный шрифт и отрендерить его в нужно размере получив таким образом растр. В общем с этой стороны поддержку можно считать достаточной.</p>
 
-<p>Теперь о вводе. UEFI предоставляет в том же пакете HII (Human Interface Infrastructure) еще один тип ресурсов - клавиатурные раскладки: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_KEYBOARD_LAYOUT">http://wiki.phoenix.com/wiki/index.php/EFI<em>HII</em>KEYBOARD_LAYOUT</a>. Раскладка это таблица маппинга скан кода на UTF16 код символа + флаги: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_KEY_DESCRIPTOR">http://wiki.phoenix.com/wiki/index.php/EFI<em>KEY</em>DESCRIPTOR</a>. Здесь маппинг уже не такой прямой как в случае со шрифтами. В поле атрибутов можно указать ряд флагов, а клавиатурный драйвер будет их учитывать и изменять свое внутреннее состояние в зависимости от нажатой клавиши. Например через флаги EFI<em>NS</em>KEY<em>MODIFIER и EFI</em>NS<em>KEY</em>DEPENDENCY_MODIFIER реализуется поддержка &quot;мертвых клавиш&quot;.</p>
+<p>Теперь о вводе. UEFI предоставляет в том же пакете HII (Human Interface Infrastructure) еще один тип ресурсов - клавиатурные раскладки: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_KEYBOARD_LAYOUT">http://wiki.phoenix.com/wiki/index.php/EFI_HII_KEYBOARD_LAYOUT</a>. Раскладка это таблица маппинга скан кода на UTF16 код символа + флаги: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_KEY_DESCRIPTOR">http://wiki.phoenix.com/wiki/index.php/EFI_KEY_DESCRIPTOR</a>. Здесь маппинг уже не такой прямой как в случае со шрифтами. В поле атрибутов можно указать ряд флагов, а клавиатурный драйвер будет их учитывать и изменять свое внутреннее состояние в зависимости от нажатой клавиши. Например через флаги EFI_NS_KEY_MODIFIER и EFI_NS_KEY_DEPENDENCY_MODIFIER реализуется поддержка &quot;мертвых клавиш&quot;.</p>
 
 <p>Модель для разработчика выглядит примерно так же как и в случае со шрифтами: чтобы поддержать ввод символов например на русском языке нужно изготовить таблицу дескрипторов и загрузить ее в рантайме. Но как оказалось тут кроется подстава. В EDK две реализации клавиатурного драйвера: <a href="http://sourceforge.net/p/tianocore/edk2/ci/master/tree/MdeModulePkg/Bus/Usb/UsbKbDxe">UsbKbDxe</a> и <a href="http://sourceforge.net/p/tianocore/edk2/ci/master/tree/IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe">Ps2KeyboardDxe</a>. Первый - драйвер USB клавиатуры, а второй - PS2, работающий через <a href="http://en.wikipedia.org/wiki/Intel_MCS-48">Intel 8042</a> контроллер. Как оказалось раскладки поддерживает только драйвер USB клавиатуры. Соответвенно для PS2 клавиатур нужно портировать код обработки раскладок.</p>
 
@@ -428,7 +428,7 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
 <p>Наше окружение на базе UEFI работает в защищенном режиме, а это значит что оно должно предоставлять IDT. Для чтения диска мы хотим опираться на BIOS, но BIOS работает в реальном режиме, в котором процессор ничего не знает про IDTR и хочет простую таблицу указателей на 16-ти битный код. Когда мы вовращаемся из защищенного режима в реальный, то все будет работать нормально, потому что обработчики BIOSа окажутся на месте. Что делать когда мы работаем в защищенном режиме? Прерывания доставляются асинхронно и BIOS не будет о них знать, если мы не будем их форвардить. Вопрос, нужно ли из форвардить или нет? DuetPkg этого не делает, но это ни о чем не говорит.</p>
 
-<p>С DuetPkg в этом плане еще хуже. Он использует механизм BiosThunk для реализации EFI<em>GRAPHICS</em>OUTPUT_PROTOCOL через ISR 10h биоса: <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/BiosVideoThunkDxe">BiosVideoThunkDxe</a>. Что именно там происходит я описывать не буду - главное то, что код вектора 10h исполняется с выключенными прерываниями. Драйвер возвращается в реальный режим, но при этом весь код, выполняющийся там, выполняется с выключенными прерываниями. Вместо инструкции int драйвер напрямую вызывает код обработчика по указателю. Это значит, что использовать такой механизм для вызова INT 13h нельзя, потому что INT 13h ожидает от диска ответного прерывания по окончанию запроса, с таймаутом. До получения такого ответа он не возвращается, а по истечению таймаута возвращается с ошибкой. Даже если в защищенном режиме реализован форвардинг прерываний в BIOS, то он сработает слишком поздно - когда int 13h уже вернулся, потому что прерывания от диска не было. Clover, как оказалось, своим драйвером диска поверх INT 13h не пользуется.</p>
+<p>С DuetPkg в этом плане еще хуже. Он использует механизм BiosThunk для реализации EFI_GRAPHICS_OUTPUT_PROTOCOL через ISR 10h биоса: <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/BiosVideoThunkDxe">BiosVideoThunkDxe</a>. Что именно там происходит я описывать не буду - главное то, что код вектора 10h исполняется с выключенными прерываниями. Драйвер возвращается в реальный режим, но при этом весь код, выполняющийся там, выполняется с выключенными прерываниями. Вместо инструкции int драйвер напрямую вызывает код обработчика по указателю. Это значит, что использовать такой механизм для вызова INT 13h нельзя, потому что INT 13h ожидает от диска ответного прерывания по окончанию запроса, с таймаутом. До получения такого ответа он не возвращается, а по истечению таймаута возвращается с ошибкой. Даже если в защищенном режиме реализован форвардинг прерываний в BIOS, то он сработает слишком поздно - когда int 13h уже вернулся, потому что прерывания от диска не было. Clover, как оказалось, своим драйвером диска поверх INT 13h не пользуется.</p>
 
 <p>Почему Duet так делает? Потому что во-первых у него есть драйвера дисков, во-вторых он не хочет пропустить прерывания когда делает thunk в 16-ти битный код и в третьих потому что 10h прерывания не нужны для работы. Проблема есть, но пока она роли не играет. Если мы уходим в реальный режим &quot;насовсем&quot;, т.е. чтобы загрузить хостовую ОС, то нам не нужен thunk. Проблема будет, когда мы захотим прочитать с диска во время работы. Решить это можно грубо, включив таки прерывания во время thunk-а и перенаправив их в обработчики биоса. Тогда Duet может потерять несколько прерываний. В крайнем случае придется мутить что-то страшное наподобие редиректора прерываний в оба режима.</p>
 
@@ -516,7 +516,7 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T19:42:30+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T22:56:05+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

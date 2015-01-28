@@ -52,7 +52,7 @@
 <li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/EfiLdr">EfiLdr</a> - загрузчик PE образов. Ему передается управление сразу после перехода в плоский защищенный режим. В его задачи входит расжатие остальных компонентов образа, парсинг и релокация PE и передача управления в DxeIpl</p></li>
 <li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/DxeIpl">DxeIpl</a> - Занимается базовой инициализацией платформы. Инициализирует paging, таблицу прерываний защищенного режима и отдает управление в DxeCore, который уже является стандартным компонентом из MdePkg, т.е. &quot;прикладным&quot; кодом EDK.</p></li>
 <li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/PciBusNoEnumerationDxe">PciBusNoEnumerationDxe</a>/<a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/PciRootBridgeNoEnumerationDxe">PciRootBridgeNoEnumerationDxe</a> - драйвера PCI шины. Предоставляют доступ к PCI configuration space, реализуют PCI IO, позволяют обходить шину и искать там конкретные устройства. NoEnumeration означает что эти компоненты не занимаются аллокацией PCI ресурсов. Т.е. если какое-то устройство на шине не было проинициализировано биосом, то выделением и арбитрацией ресурсов для него будет заниматься конкретный драйвер этого устройства, а не эти компоненты.</p></li>
-<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/BiosVideoThunkDxe">BiosVideoThunkDxe</a> - механизм вызова INT 10h биоса и реализация EFI<em>GRAPHICS</em>OUTPUT_PROTOCOL поверх него.</p></li>
+<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/BiosVideoThunkDxe">BiosVideoThunkDxe</a> - механизм вызова INT 10h биоса и реализация EFI_GRAPHICS_OUTPUT_PROTOCOL поверх него.</p></li>
 <li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/FSVariable">FSVariable</a> - драйвер эмуляции NVRAM через файл на загрузочной флешке.</p></li>
 </ul>
 
@@ -149,7 +149,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T19:42:30+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T22:56:05+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 
