@@ -69,6 +69,7 @@ body {
 a {
   color: #268bd2;
   text-decoration: none;
+  outline: none;
 }
 a strong {
   color: inherit;
@@ -378,6 +379,16 @@ tbody tr:nth-child(odd) th {
   color: inherit;
 }
 
+.tags {
+    display: block;
+    text-align: right;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+.tags a {
+    /* color: #303030; */
+    outline: none;
+}
 
 /*
  * Pagination
