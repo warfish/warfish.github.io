@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      CoreBoot &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">CoreBoot</h1>
+  <time datetime="2013-05-11T23:18:44+07:00" class="post-date">11 May 2013</time>
+  <p><a href="http://coreboot.org/">coreboot</a> это опен сорсная реализация нижней половины биоса. Нижней половины означает, что он не реализует API прерываний, GUI настроек и прочее. Все это делегирует payload-у в терминологии проекта. Вместо этого coreboot реализует инициализацию чипсета, устройств и запускает payload. Проект поддерживается многими производителями чипсетов, такими как AMD например (Intel продвигает UEFI).</p>
+
+<p>Это очень интересный проект по которому можно изучить что делает биос на самых первых этапах старта машины, еще из EEPROM. Ниже линки на особенно заинтересовавшие части:</p>
+
+<p>Старт прошивки в реальном режиме: <a href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;h=e4613bf986c15d73e7ea70f72dc241d1539f3038;hb=HEAD">http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;h=e4613bf986c15d73e7ea70f72dc241d1539f3038;hb=HEAD</a></p>
+
+<p>Старт прошивки в защищенном режиме:<a href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc;h=f74e1b87374e2f11af1fa7b7f60e3c17da1d4f1c;hb=HEAD"> http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc;h=f74e1b87374e2f11af1fa7b7f60e3c17da1d4f1c;hb=HEAD</a></p>
+
+<p>Точка входа инициализации устройств:<a href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/lib/hardwaremain.c;h=99b4a069b4ddabf6b79926bd482be54f6f1ab828;hb=HEAD"> http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/lib/hardwaremain.c;h=99b4a069b4ddabf6b79926bd482be54f6f1ab828;hb=HEAD</a></p>
+
+<p>Реализация общего драйвера PCI устройства: <a href="http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/pci_device.c;h=4c5a81451c923072b48182cb198080823ab19402;hb=HEAD">http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/pci_device.c;h=4c5a81451c923072b48182cb198080823ab19402;hb=HEAD</a></p>
+
+  <span class="tags">
+      
+      <a href="/BIOS/">BIOS</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

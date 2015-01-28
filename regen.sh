@@ -11,4 +11,7 @@ cp -r _site/* ../
 popd
 touch .nojekyll
 
+# Add git changes
+git add .
+git commit -m "Autoregenerated update"
 

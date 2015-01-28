@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      [UEFI Emulation] EDK/Duet is a moderate success &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">[UEFI Emulation] EDK/Duet is a moderate success</h1>
+  <time datetime="2013-07-02T23:11:23+07:00" class="post-date">02 Jul 2013</time>
+  <p>Прототипирование UEFI эмуляции на базе EDK/Duet можно считать законченным. Я считаю результат умеренным успехом. Успехом потому что такой подход действительно позволяет поставить знак равенства между Legacy BIOS и UEFI системами на том уровне поддержки аппаратуры, что нам нужен. А умеренным потому что, несмотря на знак равенства, возможности самого UEFI, будь то native или эмуляция, оставляют за нами массу прикладной работы по поддержке локализации, ввода национальных символов и двух факторной авторизации. Глупо было ожидать обратного. :)</p>
+
+<p>Если сконцентрироваться на хорошем, то UEFI, по сравнению с &quot;голым&quot; PBA дает:</p>
+
+<ul>
+<li><p>Защиту памяти и полную адресацию. Коррапты памяти раньше происходили тихо и незаметно. Теперь такие баги генерируют GPF.</p></li>
+<li><p>Поддержку современных тулчейнов, включая тот, что используется для остального проекта. Использование MSVC 1.52 можно свести к минимуму, а значит и его баги тоже (а они есть).</p></li>
+<li><p>Графический фреймбуфер и рендер растровых юникодных шрифтов.</p></li>
+<li><p>Работающий USB и PCI стек.</p></li>
+<li><p>Достаточный контроль состояния аппаратуры.</p></li>
+<li><p>Модульность, взаимозаменяемость драйверов через повсеместную абстракцию протоколами. Это очень важно для эмуляции, потому что дает возможность заменить реализацию например графического дисплея на свою, работающую через BIOS.</p></li>
+<li><p>Поддержка source-level отладки.</p></li>
+<li><p>Стеки сетевых протоколов.</p></li>
+<li><p>libc</p></li>
+</ul>
+
+<p>Из &quot;умеренного&quot;:</p>
+
+<ul>
+<li><p>Поддержка ввода национальных символов совсем базовая. Раскладки нужно генерировать самостоятельно. Если для европейских языков все терпимо, то для азиатских и арабских выглядит довольно сложно, хотя и не невозможно.</p></li>
+<li><p>Драйвера крипто токенов. Их либо нет, либо они в непонятно каком состоянии в опенсорсных либах, либо нужно начинать говорить с вендорами токенов.</p></li>
+<li><p>Нет полноценного GUI фреймворка &quot;из коробки&quot;. Есть все необходимые базовые технологические стеки для его реализации/портирования, типа фреймбуфера, драйверов устройств ввода и т.д, но нет самих примитивов, из которых строится GUI.</p></li>
+</ul>
+
+<p>Если ссумировать, то UEFI предоставляет всю базу, чтобы реализовать прикладные задачи, но не больше этого. Реализовать все остальное можно используя нормальный компилятор, отладчик, защиту памяти, снятие множества ограничений по ресурсам и т.д. EDK/Duet выравнивает BIOS до этого же уровня, что экономит наверное год работы и дает унифицирование платформы на поддерживаемых аппаратных конфигурациях. Но при этом все, что выходит за рамки базовой платформы, нужно делать/портировать почти самостоятельно, и, хочу еще раз подчеркнуть, это касается UEFI в целом, а не только его эмуляции. Приятное исключение это рендер шрифтов :)</p>
+
+  <span class="tags">
+      
+      <a href="/BIOS/">BIOS</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

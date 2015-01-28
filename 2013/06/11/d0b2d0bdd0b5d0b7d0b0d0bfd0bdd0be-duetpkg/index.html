@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Внезапно DuetPkg &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Внезапно DuetPkg</h1>
+  <time datetime="2013-06-11T21:40:04+07:00" class="post-date">11 Jun 2013</time>
+  <p>После одного часа, потраченного на DuetPkg из EDK2 удалось его собрать и прожечь на загрузочную флешку. Загрузившись на реальной машине через BIOS внезапно оказалось, что в получившейся среде есть:</p>
+
+<ul>
+<li><p>Печать юникода на экран (у среды есть французская локализация).</p></li>
+<li><p>Полноценный UEFI рантайм, поверх которого успешно грузятся драйвера и запускатся приложения, в том числе и шелл.</p></li>
+<li><p>PCI/USB стек.</p></li>
+<li><p>Sata, Scsi, Ide драйвера, которые можно подгружать</p></li>
+<li><p>Готовые механизмы возврата в реальный режим и вызова BIOS ISR.</p></li>
+<li><p>Много еще чего-то, чего я не успел заметить</p></li>
+</ul>
+
+<p>Не удалось проверить клавиатурные раскладки. В остальном, внезапно, DuetPkg дает все выше перечисленное, т.е. снимает где-то пол года работы по воссозданию среды эмуляции UEFI. Чтобы заработали токены надо портировать libopensc. USB стек уже есть.</p>
+
+<p>Конечно скорее всего это не бесплатно. При таком богатстве наверное опять встанет проблема состояния железа. Но в этом случае она несравнимо более контролируемая чем  на Linux и, к примеру, написать дисковый драйвер для этой среды, опирающийся на int 13h, не составит особого труда. Более контролируемая она потому что получившаяся среда крайне модульная, очень недалеко стоит от BIOS&#39;а и по своему объему вполне доступна для понимания одним человеком. Выкинуть из сборки например поддержку AHCI будет очень просто. Реализовать замену через int 13h тоже несложно.</p>
+
+<p>Я только очень надеюсь что вопрос с лицензированием не подведет. В остальном таким образом относительно легко BIOS уравнивается в функционале до UEFI, точнее того его подмножества, который мне нужен. Нужно работать дальше, но пока этот вариант выглядит очень привлекательно.</p>
+
+<p>Мне кажется, что при таком раскладе на первый план сейчас выходит проработка загрузки хостовой ОС из этой среды через оригинальный MBR. И тут я припас главное. Есть open source проект <a href="http://sourceforge.net/projects/cloverefiboot/">Clover</a>, который представляет из себя UEFI-based boot loader, основанный на DuetPkg, стартующий с BIOS и загружающий ряд операционных систем. Т.е. он решает эту задачу и им можно вдохновлятся. Ну к примеру реализация вышеупомянутого BlockIo драйвера через INT 13h: <a href="http://sourceforge.net/p/cloverefiboot/code/HEAD/tree/LegacyBios/BlockIoDxe/">http://sourceforge.net/p/cloverefiboot/code/HEAD/tree/LegacyBios/BlockIoDxe/</a></p>
+
+<p>Все это внезапно выглядит слишком хорошо.</p>
+
+<p>UPD: Лицензия - <a href="http://edk2.svn.sourceforge.net/viewvc/edk2/trunk/edk2/MdeModulePkg/License.txt?revision=14397&amp;view=markup">http://edk2.svn.sourceforge.net/viewvc/edk2/trunk/edk2/MdeModulePkg/License.txt?revision=14397&amp;view=markup</a><br>
+Насколько я понимаю она позволяет нам использовать этот код без ограничений кроме как приложить текст дисклеймера?</p>
+
+  <span class="tags">
+      
+      <a href="/BIOS/">BIOS</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

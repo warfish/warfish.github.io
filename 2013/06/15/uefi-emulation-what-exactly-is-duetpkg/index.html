@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      [UEFI Emulation] What exactly is DuetPkg &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">[UEFI Emulation] What exactly is DuetPkg</h1>
+  <time datetime="2013-06-15T19:04:50+07:00" class="post-date">15 Jun 2013</time>
+  <p>Речь пойдет о том, что именно такое DuetPkg в EDK2, какую роль он выполняет.</p>
+
+<p>DuetPkg, в рамках EDK пакета (<a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/">http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/</a>) служит базовой реализацией платформы UEFI поверх Legacy BIOS. На этапе загрузки в его задачи входит загрузка образа, инициализация защищенного режима, страничной памяти и таблицы прерываний, - все под требования остальных компонентов EDK, чтобы они &quot;просто работали&quot;. В рантайме он занимается эмуляцией NVRAM и предоставляет сервис для возврата в реальный режим и вызовы прерываний BIOS.  Если разобрать его покомпонентно, то получается такая картина:</p>
+
+<ul>
+<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/BootSector">BootSector</a> - набор ассемблерных программ реального и защищенного режима. Из них комбинируется цепочка загрузки на разных платформах. Mbr, FAT boot sector и старт EfiLoader-а, - все там.</p></li>
+<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/EfiLdr">EfiLdr</a> - загрузчик PE образов. Ему передается управление сразу после перехода в плоский защищенный режим. В его задачи входит расжатие остальных компонентов образа, парсинг и релокация PE и передача управления в DxeIpl</p></li>
+<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/DxeIpl">DxeIpl</a> - Занимается базовой инициализацией платформы. Инициализирует paging, таблицу прерываний защищенного режима и отдает управление в DxeCore, который уже является стандартным компонентом из MdePkg, т.е. &quot;прикладным&quot; кодом EDK.</p></li>
+<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/PciBusNoEnumerationDxe">PciBusNoEnumerationDxe</a>/<a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/PciRootBridgeNoEnumerationDxe">PciRootBridgeNoEnumerationDxe</a> - драйвера PCI шины. Предоставляют доступ к PCI configuration space, реализуют PCI IO, позволяют обходить шину и искать там конкретные устройства. NoEnumeration означает что эти компоненты не занимаются аллокацией PCI ресурсов. Т.е. если какое-то устройство на шине не было проинициализировано биосом, то выделением и арбитрацией ресурсов для него будет заниматься конкретный драйвер этого устройства, а не эти компоненты.</p></li>
+<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/BiosVideoThunkDxe">BiosVideoThunkDxe</a> - механизм вызова INT 10h биоса и реализация EFI<em>GRAPHICS</em>OUTPUT_PROTOCOL поверх него.</p></li>
+<li><p><a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/FSVariable">FSVariable</a> - драйвер эмуляции NVRAM через файл на загрузочной флешке.</p></li>
+</ul>
+
+<p>Остальные компоненты выполняют вспомогательную функцию и особого интереса не представляют. Для реализации всего остального UEFI окружения, например страничного аллокатора, загрузчика драйверов, базу данных хендлов и фреймворка пользовательского интерфейса (HII) используются компоненты не входящие напрямую в DuetPkg, а находящиеся в основном в MdePkg, MdeModulePkg, PcAtChipsetPkg, IntelFrameworkPkg.</p>
+
+<p>Получается, что все богатство эмуляции, которое видно после загрузки с флешки со сборкой DuetPkg реализовано именно прикладным кодом EDK, а не дуэтом. Если разобрать как выглядит сборка дуэта в рантайме и как она загружается (например с флешки), то получается примерно так:</p>
+
+<ol>
+<li><p>BIOS загружает MBR флешки (DuetPkg/BootSecotor/Mbr.asm)</p></li>
+<li><p>MBR ищет FAT12/16/32 раздел, читает boot sector (DuetPkg/BootSector/bs32.asm) и отдает ему управление</p></li>
+<li><p>BS парсит FAT и ищет файл EfiLdr20, лежащий в корне раздела. Затем он загружает первый сектор этого файла и отдает ему управление.</p></li>
+<li><p>Структура EfiLdr20:</p>
+
+<ol>
+<li>Start32.com (BootSector/Start32.asm). Разделен на две части. В первом секторе находится код реального режима, который поднимает с диска весь остальной EfiLdr20 и переходит по оффсету 0x200 в нем.</li>
+<li>Start32.com2 (тот же BootSector/Start32.asm). Вторая половина переводит машину в защищенный режим и передает управление Efi32.com2, по оффсету 0x1000 внутри файла</li>
+<li>Efi32.com2 (BootSecotor/Efi32.asm). Составляет e820 карту памяти, парсит заголовок EfiLoader и передает ему управление с параметром - адресом карты памяти.</li>
+<li>EfiLoader. Был описан ранее. Разжимает, релоцирует и запускает DxeIpl/PE</li>
+<li>DxeIpl. Был описан ранее. Инициализирует платформу и запускает DxeCore/PE.</li>
+</ol></li>
+</ol>
+
+<p>На этом вклад DuetPkg в этап загрузки системы заканчивается. DxeCore, который работает следом, уже часть MdePkg. Он парсит базу данных драйверов FV (которая идет следом за ним в EfiLdr20) и загружает каждый из этих драйверов. Драйвера, загружаясь, инициализируются, создают хендлы и публикуют на них протоколы, - обычный такой UEFI рантайм. В конце концов загружается BootManager, ищет загрузочное устройство и запускает с него шелл. Или не запускает, если не нашел. Суть описанного в том, что DuetPkg существует в качестве jump start-ера ядра EDK и всех его драйверов. В рантайме он предоставляет дополнительные драйвера, но немного.</p>
+
+<p>Возникает вопрос, а можно ли тогда сделать &quot;свой&quot; DuetPkg и, главное, зачем?</p>
+
+<p>Можно, причем это не слишком тяжело. Вещи типа страничного аллокатора и базы данных хендлов и HII и всего остального идут &quot;бесплатно&quot; из других компонентов EDK. Все что требуется от своей реализации это инициализировать пейджинг, таблицу прерываний, несколько драйверов и обеспечить загрузку всего этого добра согласно протоколам UEFI.</p>
+
+<p>Зачем это может понадобится? Затем, что задача DuetPkg это окружение для тестирования UEFI приложений и драйверов на Legacy BIOS машинах. Он не подразумевает например последующую загрузку UEFI-capable или любой другой ОС. В результате он все-таки не слишком заботится о сохранении состояния аппаратуры для биоса. Задачи бывают разные, с разными требованиями, для реализации которых нужно переделывать процесс загрузки образа, иначе обходится с аппаратурой, больше опираться на биос, не лезть в ACPI, выкинуть эмуляцию NVRAM и т.д. Возможно проще сделать свой Duet (попутно вытянув из оригинала все что можно) нежели чем перепиливать существующий пополам.</p>
+
+<p>К слову загрузку я уже переделал. Вместо флешки образ кладется на диск, стартует мой MBR, поднимает с сырого диска ld.com, который поднимает весь образ EfiLdr20 и отдает управление сразу в пункт 4.2, т.е. второй части Start32.com</p>
+
+  <span class="tags">
+      
+      <a href="/preboot/">preboot</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

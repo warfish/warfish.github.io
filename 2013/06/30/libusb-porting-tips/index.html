@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      libusb porting tips &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">libusb porting tips</h1>
+  <time datetime="2013-06-30T01:10:57+07:00" class="post-date">30 Jun 2013</time>
+  <p>From <a href="http://www.libusb.org/wiki/libusb-1.0">http://www.libusb.org/wiki/libusb-1.0</a></p>
+
+<blockquote>[libusb](http://www.libusb.org/)-1.0 includes a platform abstraction layer allowing for cross-platform compatibility. Linux, Darwin (Mac OS X), Windows, OpenBSD and NetBSD are supported in the latest release.
+
+FreeBSD 8 and above include a FreeBSD-specific reimplementation of the libusb-1.0 API, so your applications will probably work there too. The source code for this library can be found [​here](http://svn.freebsd.org/viewvc/base/head/lib/libusb/).
+
+If you are interested in porting to other platforms, the [PORTING](http://git.libusb.org/?p=libusb.git;a=blob;f=PORTING;h=7070784d04761562e38208d9d2fa4c2460eefc30;hb=ab9cd5a7be637f7b793987971a706b1d11c27ded;js=1) file tells you where to start. We are more than happy to help out here, please write to the mailing list with your questions and feedback.</blockquote>
+
+<p>From <a href="http://git.libusb.org/?p=libusb.git;a=blob;f=PORTING;h=7070784d04761562e38208d9d2fa4c2460eefc30;hb=ab9cd5a7be637f7b793987971a706b1d11c27ded;js=1">PORTING</a>:</p>
+
+<blockquote>
+
+> 
+> Implementation-wise, the basic idea is that you provide an interface to
+> 
+> 
+
+> 
+> libusb's internal "backend" API, which performs the appropriate operations on
+> 
+> 
+
+> 
+> your target platform.
+> 
+> 
+
+> 
+> 
+
+> 
+> In terms of USB I/O, your backend provides functionality to submit
+> 
+> 
+
+> 
+> asynchronous transfers (synchronous transfers are implemented in the higher
+> 
+> 
+
+> 
+> layers, based on the async interface). Your backend must also provide
+> 
+> 
+
+> 
+> functionality to cancel those transfers.
+> 
+> 
+
+> 
+> 
+
+> 
+> Your backend must also provide an event handling function to "reap" ongoing
+> 
+> 
+
+> 
+> transfers and process their results.
+> 
+> 
+
+> 
+> 
+
+> 
+> The backend must also provide standard functions for other USB operations,
+> 
+> 
+
+> 
+> e.g. setting configuration, obtaining descriptors, etc.
+> 
+> 
+
+> 
+> </blockquote>
+
+<p>Existing libusb ports are found in <a href="http://git.libusb.org/?p=libusb.git;a=tree;f=libusb/os;h=1ec9613c0fc4facf6e9217af4130f02387e2b470;hb=7634714aa696175b08016b6f2185a75a2f55a113;js=1">libusb/os folder</a></p>
+
+<p>libusbi.h contains a very well documented interface that should be implemented on a new platform: <a href="http://git.libusb.org/?p=libusb.git;a=blob;f=libusb/libusbi.h;h=3b602d28ca4cae7577bcdcabddccaeb04c0a79cb;hb=7634714aa696175b08016b6f2185a75a2f55a113;js=1#l468">usbi<em>os</em>backend</a></p>
+
+  <span class="tags">
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

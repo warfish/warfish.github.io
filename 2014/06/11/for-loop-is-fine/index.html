@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      For loop is fine &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">For loop is fine</h1>
+  <time datetime="2014-06-11T00:00:53+07:00" class="post-date">11 Jun 2014</time>
+  <p>Часто приходится писать такой код:</p>
+
+<blockquote>
+
+>     
+>     void ProcessAll(element_t* elements, size_t total)
+>     {
+>         for (size_t i = 0; i < total; ++i)
+>         {
+>             ProcessElement(elements[i]);
+>         }
+>     }
+> 
+> 
+</blockquote>
+
+<p>So far so good. Но затем нужно обычно написать еще нечто вроде:</p>
+
+<blockquote>
+
+>     
+>     void PrintAll(element_t* elements, size_t total)
+>     {
+>         for (size_t i = 0; i < total; ++i)
+>         {
+>             PrintElement(elements[i]);
+>         }
+>     }
+> 
+> 
+</blockquote>
+
+<p>И тут срабатывает инстинкт &quot;где-то я это уже видел&quot;, и, вспоминая какой-нибудь SICP, хочется выделить итерацию отдельно и написать:</p>
+
+<blockquote>
+
+>     
+>     void ForEachElement(element_t* elements, size_t total, 
+>                         ElementCallbackFptr callback, void* context)
+> 
+> 
+
+>     
+>     {
+>         for (size_t i = 0; i < total; ++i)
+>         {
+>             callback(elements[i], context);
+>         }
+>     }
+> 
+> 
+</blockquote>
+
+<p>И начать переписывать ProcessAll и PrintAll через ForEachElement + callback собирая со стека весь контекст в context.
+Такой код выглядит красиво, общее абстрагировано, частное параметризировано.</p>
+
+<p>Но затем такой код нужно читать кому-то другому, обязательно под дедлайном с целью быстро найти и исправить баг. И тут у читающего начинаются проблемы:</p>
+
+<ol>
+<li><p>Итерация визуально отделена от обработки каждого элемента.
+Callback отдельная функция, а не код внутри цикла и визуально он вынесен из скоупа цикла. Приходится прыгать по файлу с целью найти функцию обработки каждого элемента, помнить какая реализация callback соответствует какому из вызовов ForEachElement. Это не дает читающему видеть весь контекст алгоритма сразу, а держать в голове дополнительный контекст и вспоминать его заново каждый раз.</p></li>
+<li><p>void* context в лучшем случае структура, специфичная для каждой реализации callback (в худшем абстрактный интерфейс).
+В эту структуру как правило со стека рядом с вызовом ForEachElement упаковываются параметры. Читающему нужно помнить еще один контекст - какой параметр куда присвоен в структуре и чему соответствует на самом деле в реализации callback.</p></li>
+<li><p>Порог вхождения в то как автор называет итерацию.
+Цикл for в типичном виде парсится более-менее опытным кодером за один проход. Он не вчитывается в символы, не выясняет их значения, а сразу видит семантику - автор проходит по всем элементам. For это базовая конструкция языка понятная всем. В случае когда автор выделил итерацию отдельно появляется порог вхождения - как именно автор назвал свой аккуратно вырезанный for - ForEach, Enumerate, Walk? Можно сказать, что поняв это один раз можно уже не напрягаться в следующий, но ведь for понимать не надо и в самый первый раз и во все последующие. К тому же код редко читается как книга, в основном читается одна функция за раз с целью найти проблему. Если систему делают несколько авторов, каждый из которых делает свою итерацию, то за одним ForEach следует другой Enumerate уже от другого автора и порог вхождения начинает расти.</p></li>
+</ol>
+
+<p>В итоге абстрагировать простейший цикл for может и выглядит красиво при написании кода, но создает только проблемы тому, кто хочет разобраться что происходит.
+Если итерация не простая? Я стараюсь в таком случае делать код &quot;максимально совместимым&quot; с for делая для своих элементов First(), Next() и End().</p>
+
+  <span class="tags">
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

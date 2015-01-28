@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      My worklog &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <div class="posts">
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/10/09/doom-uefi-title-screen/">
+        [DOOM-UEFI] Title screen
+      </a>
+    </h1>
+
+    <time datetime="2013-10-09T00:52:07+07:00" class="post-date">09 Oct 2013</time>
+
+    <p>Yeah!</p>
+
+<p><a href="http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-09-at-12-48-46-am.png"><img src="http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-09-at-12-48-46-am.png?w=300" alt="Screen Shot 2013-10-09 at 12.48.46 AM"></a></p>
+
+<p>Original game res is 320x200. EFI is running in 800x600. On to scaling and input processing.</p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/10/07/doom-uefi-d_mainloop/">
+        [DOOM-UEFI] D_MainLoop
+      </a>
+    </h1>
+
+    <time datetime="2013-10-07T23:19:43+07:00" class="post-date">07 Oct 2013</time>
+
+    <p><a href="http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-07-at-11-15-04-pm.png"><img src="http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-07-at-11-15-04-pm.png?w=300" alt="Screen Shot 2013-10-07 at 11.15.04 PM"></a></p>
+
+<p>Все ресурсы загружены, все подсистемы проинициализированы. D_MainLoop начинает сбор пользовательского ввода и рендеринг кадров. Можно начинать реализовывать рисование и ввод :)</p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/10/07/uefi-doom-how-not-to-write-portable-code/">
+        [UEFI-DOOM] How not to write portable code
+      </a>
+    </h1>
+
+    <time datetime="2013-10-07T22:43:55+07:00" class="post-date">07 Oct 2013</time>
+
+    <p>Структура текстурного патча из сурсов дума. Подразумевается что эти структуры хранятся в ресурсном образе as is, код подгружает их читая sizeof(maptexture_t) из файла:</p>
+
+<blockquote>struct maptexture_t
+{
+char name[8];
+boolean masked;
+short width;
+short height;
+void** obsolete;
+patch_t patches[1];
+};</blockquote>
+
+<p>Естественно собираясь для 64-х битного уефая размер этой структуры едет сразу по нескольким полям.</p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/10/06/uefi-doom-check-the-plug/">
+        [UEFI-DOOM] Check the plug
+      </a>
+    </h1>
+
+    <time datetime="2013-10-06T22:08:26+07:00" class="post-date">06 Oct 2013</time>
+
+    <p>Пол дня бился над багом, порт зависал при загрузке текстур. Написал тестовые тулзы, оттрассировал проблему до зонового аллокатора дума. Начал подозревать реализацию malloc из EDK, а потом увидел, что перед падением у аллокатора просят -80 байт (минус восемьдесят).</p>
+
+<p>Оказалось мне попался закорапченный образ текстур игры =\</p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/10/06/doom-uefi-wad-files-and-edk-stdlib-problems/">
+        [DOOM-UEFI] WAD files and EDK stdlib problems
+      </a>
+    </h1>
+
+    <time datetime="2013-10-06T11:24:05+07:00" class="post-date">06 Oct 2013</time>
+
+    <p>Дум хранит все свои ресурсы в одном файле с расширением wad. Структура очень простая:</p>
+
+<p>Заголовок файла описывается структурой wadinfo_t:</p>
+
+<blockquote>struct wadinfo_t
+{
+char id[4]; // "IWAD" or "PWAD"
+int numlumps;
+int tableoffset;
+};</blockquote>
+
+<p>Файла начинается с &quot;IWAD&quot; или &quot;PWAD&quot; идентификатора, tableoffset показывает на позицию в файле где хранится массив структур filelump_t размером numlumps элементов:</p>
+
+<blockquote>struct filelump_t
+{
+char name[8];
+int size;
+int filepos;
+};</blockquote>
+
+<p>filelump_t показывает на область файла filepos, где хранится бинарный блоб с именем name и размером size байт. В doom.wad около 2 тысяч таких лампов. Каждый ламп хранится бинарным блобом с какой-то своей структурой, про которую wad файл ничего не знает.</p>
+
+<p>Стартуя, дум пытается найти несколько wad файлов по известным именам и определяет тип игры по имени найденного wad файла: doom.wad для doom1, doomu.wad для unltimate doom, doom2.wad для doom2, etc. Чтобы понять существует файл или нет код использует посиксовую функцию access(2), которая возвращает 0 если файл существует и доступен на открытие с запрошенными правами либо ошибку.</p>
+
+<p>Тут начинаются проблемы с EDK stdlib. Их реализация access возвращает 0 даже если файла нет, т.е. для нее все файлы существуют. Она опирается на функцию open, которая тоже всегда возвращает ненулевой дескриптор даже если файла нет, потому что в реализации баг, который как бы по умолчанию подразумевает флаг O_CREATE, т.е. создать файл если его нет.</p>
+
+<p>Чинить open я не хочу, иначе мой бранч на гитхабе не будет работать у людей со свежим EDK. Переписывать open тяжело, но возможно придется. Пока я просто поставил поиск doom.wad первым в списке, потому что он как раз и должен быть найден.</p>
+
+<p>P.S.: Структуры взяты из самого кода дума. Используются типы не фиксированного размера, что создало проблемы на X64, что правда легко исправить.</p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/10/03/doom-uefi-development-environment/">
+        [DOOM-UEFI] Development environment
+      </a>
+    </h1>
+
+    <time datetime="2013-10-03T23:54:09+07:00" class="post-date">03 Oct 2013</time>
+
+    <p><a href="http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-03-at-11-47-33-pm.png"><img src="http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-03-at-11-47-33-pm.png?w=300" alt="Screen Shot 2013-10-03 at 11.47.33 PM"></a></p>
+
+<p>Qemu запущен с кастомной прошивкой из EDK - OVMF. У этого эмулятора есть убойная фича (вообще их много) - способность задавать в качестве диска папку на хостовой файловой системе.</p>
+
+<p>Qemu грузится с OVMF, запускается уефайный шелл, fs0 показывает на папку на хосте, где лежит doom.efi. Красота.</p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/10/02/doom-uefi-edk-vs-gnuefi/">
+        [DOOM-UEFI] EDK vs gnuefi
+      </a>
+    </h1>
+
+    <time datetime="2013-10-02T11:15:51+07:00" class="post-date">02 Oct 2013</time>
+
+    <ul>
+<li><p>Все платформенно-специфические зависимости были любезно вынесены id в файлы с перфиксами i_. Все файлы вынесены в <a href="https://github.com/warfish/DOOM/tree/master/linuxdoom-1.10/efi">https://github.com/warfish/DOOM/tree/master/linuxdoom-1.10/efi</a>. Реализации пока нет - одни стабы.</p></li>
+<li><p>Проект собирается и линкуется для EDK.</p></li>
+</ul>
+
+<p>Я работаю на маке, пришлось собирать кросс-компилятор для EDK. Пока он собирался у меня был лишний час подумать о том, насколько мне вообще нужен EDK с его громоздкой билд системой, кодогенерацией и необходимыми вывертами чтобы собираться вне EDK дерева.</p>
+
+<p>Вспомнил про проект <a href="http://sourceforge.net/projects/gnu-efi/">gnuefi</a>, на который я последний раз смотрел года 2 назад. Проект, по сравнению с EDK, крайне простой, плоский: гора хедеров с протоколами из спецификации, гора сишников с реализацией всякого полезного добра поверх спецификации и горстка ассемблерного кода с точками входа для разных архитектур. Все это собирается под нужную архитектуру и получаются теже хедера, одна статическая либа с расширениями и пара объектников, с которыми нужно слинковаться клиентскому бинарнику чтобы EFI смог запустить бинарь. Нет libc, ну и ладно. Лицензия lgpl3, что совместимо с открытыми сурсами дума.</p>
+
+<p>Такой подход по сравнению с EDK как глоток свежего воздуха: просто, тупо и понятно. Жаль что работает только на линуксе. На маке удалось собрать попинав, на винде наверное только через цигвин.</p>
+
+<p>Пока я все равно останусь на EDK, потому что я хотябы знаю что с ним делать. Но в будущем хочется уйти от него.</p>
+
+<p>Полезные ссылки:</p>
+
+<p><a href="http://smackerelofopinion.blogspot.ru/2011/05/gnu-efi-lib-and-hello-world.html">http://smackerelofopinion.blogspot.ru/2011/05/gnu-efi-lib-and-hello-world.html</a></p>
+
+<p><a href="http://sourceforge.net/projects/gnu-efi/">http://sourceforge.net/projects/gnu-efi/</a></p>
+
+<p><a href="http://www.rodsbooks.com/efi-programming/prepare.html">http://www.rodsbooks.com/efi-programming/prepare.html</a></p>
+
+<p>P.S. В этом блоге больше не должно быть рекламы.</p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/09/30/doom-uefi-day-1/">
+        [DOOM-UEFI] Day 1
+      </a>
+    </h1>
+
+    <time datetime="2013-09-30T21:51:56+07:00" class="post-date">30 Sep 2013</time>
+
+    <p>Я решил портировать <a href="http://en.wikipedia.org/wiki/Doom_(video_game)">doom</a> в пребут на уефай, just for fun.</p>
+
+<p>Отличная статья для ознакомления с архитектурой рендера: <a href="http://fabiensanglard.net/doomIphone/doomClassicRenderer.php">http://fabiensanglard.net/doomIphone/doomClassicRenderer.php</a></p>
+
+<p>Репозиторий оригинального бранча на гитхабе: <a href="https://github.com/id-Software/DOOM">https://github.com/id-Software/DOOM</a></p>
+
+<p>После беглого просмотра исходников:</p>
+
+<ul>
+<li><p>Рендер портировать скорее всего будет просто. Он софтверный с блитом в окно.</p></li>
+<li><p>Звук не в скоупе, нет драйверов.</p></li>
+<li><p>Мультиплеер тоже не в скоупе.</p></li>
+<li><p>Для инпута нужно решить проблему с получением скан кодов из EFI<em>SIMPLE</em>TEXT_INPUT.</p></li>
+<li><p>Нужна файловая система для подгрузки pk файлов.</p></li>
+</ul>
+
+<p>Мой форк тут: <a href="https://github.com/warfish/DOOM">https://github.com/warfish/DOOM</a></p>
+
+    
+    <span class="tags">
+        
+        <a href="/doom-uefi/">doom-uefi</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/09/18/pbe-d0b8-pba/">
+        PBE и PBA
+      </a>
+    </h1>
+
+    <time datetime="2013-09-18T22:01:46+07:00" class="post-date">18 Sep 2013</time>
+
+    <p>На текущий момент кажется, что разделение PBE и PBA пошло обоим на пользу, хотя и было местами болезненным. Между ними складываются отношения как между операционной системой и приложением. PBA (или его заменитель) даже собирается в PE exe, линкуясь с неким подобием рантайма для PBE. PBE конечно осью назвать нельзя, тем не менее у него есть ряд зачаточных признаков как-то:</p>
+
+<ul>
+<li><p>Загрузка на голом железе</p></li>
+<li><p>Определение, прости господи, интерфейса чем-то напоминающего системные вызовы.</p></li>
+<li><p>Модель драйверов и устройств.</p></li>
+<li><p>Защита памяти.</p></li>
+<li><p>Загрузка пользовательского приложения в качестве полезной нагрузки.</p></li>
+</ul>
+
+<p>Конечно почти ничего из этого не сделано с нуля.</p>
+
+<p>PBE это пошло на пользу в плане его генерализации, т.е. обобщения до некой очень специфически ориентированной платформы, абстрагирующейся от бизнес логики рядом интерфейсов, протоколов и контрактов. Это позволяет с одной стороны иметь несколько реализаций PBE, включая, например, эмуляцию; делает возможным удобное тестирование с другой стороны и расширяет области применимости с третьей.</p>
+
+<p>Для PBA польза также в обобщении - его определение расширяется и во-многом упрощается. Для PBA существует набор условий, в которых он работает, как-то защищенный режим, libc, подмножество плюсового рантайма, вызовы PBE. Каким образом это было достигнуто его не заботит. Ответ на вопрос что можно а что нельзя реализовать становится прямолинейным - можно то, для чего хватает описанных условий.</p>
+
+<p>Эта условия вырисовываются именно такими, потому что до определенного уровня клиент диктует платформе, что должно быть поддержано - платформа без клиента не имеет смысла. С другой стороны всегда стоят реалии того, сколько будет стоить реализация таких требований и запросы балансируются с возможностями. И это правильно, хотя технически всегда хочется сделать больше и богаче, чем нужно.</p>
+
+    
+    <span class="tags">
+        
+        <a href="/preboot/">preboot</a>
+        
+    </span>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2013/07/20/uefi-quick-ui-toolkit-overview/">
+        [UEFI] Quick UI toolkit overview
+      </a>
+    </h1>
+
+    <time datetime="2013-07-20T15:31:19+07:00" class="post-date">20 Jul 2013</time>
+
+    <p>EFI (нативно и эмулируемо) дает интерфейс <a href="http://wiki.phoenix.com/wiki/index.php/EFI_GRAPHICS_OUTPUT_PROTOCOL">GOP</a>, который поддерживает BitBlt и предлагает реализовывать GUI поверх него.  Предполагается, что BitBlt это все что нужно для этого. Я поискал в интернетах открытые и проприетарные GUI тулкиты для EFI, для embedded и для linux framebuffer, потому что последний достаточно близко эмулируется поверх GOP. Вот что удалось откапать.</p>
+
+<p><strong>C/PEG, PEG+, PEG Pro</strong></p>
+
+<p><a href="http://www.swellsoftware.com/products/cpeg.php">http://www.swellsoftware.com/products/cpeg.php</a></p>
+
+<p>Проприетарное решение от SwellSoftware, ссылка ведет на C/PEG, рядом лежат PEG+ и PEG Pro, которые стоят дороже, но дают больше функционала. В пдфке стоит поддержка x86 VBE и linux framebuffer. К сожалению evaluation kit они хотят слать физической почтой и требуют указать американский штат, поэтому посмотреть в жизни не удается. Тем не менее решение выглядит интересно, хотя цена на лицензирование только по прямому запросу в отдел продаж.</p>
+
+<p><strong>FLTK</strong></p>
+
+<p><a href="http://www.fltk.org/index.php">http://www.fltk.org/index.php</a></p>
+
+<p>Fast Light Tool Kit. Достаточно взрослый и стабильный проект, быстрый, легковесный, умеет рендерить шрифты и содержит достаточно неплохой набор виджетов. Лицензия GPL v2 с небольшими дополнениями, а именно <a href="http://www.fltk.org/COPYING.php">http://www.fltk.org/COPYING.php</a>:</p>
+
+<blockquote>Static linking of applications and widgets to the FLTK library does not constitute a derivative work and does not require the author to provide source code for the application or widget, use the shared FLTK libraries, or link their applications or widgets against a user-supplied version of FLTK.
+
+If you link the application or widget to a modified version of FLTK, then the changes to FLTK must be provided under the terms of the LGPL in sections 1, 2, and 4.</blockquote>
+
+<p>Т.е. позволяет линковаться статически и не требует раскрытия кода клиентского приложения.</p>
+
+<p>Проблема с FLTK в том, что он опирается на Carbon/GDI/X11, что существенно усложняет портирование.</p>
+
+<p><strong>Microwindows</strong></p>
+
+<p><a href="http://www.microwindows.org/">http://www.microwindows.org/</a></p>
+
+<p>Еще один распространенный в embedded среде тулкит. Пристально пока не смотрел, но радует вот это утверждение с главной страницы:</p>
+
+<blockquote>All drivers are endian-neutral with only Read/DrawPixel, DrawV/Hline and Blit entry points.</blockquote>
+
+<p>Т.е. реализация опирается на архитектуру графического драйвера, которому нужны DrawPixel, Draw[V/H]Line и Blit. Опять же, пристально не вглядывался, но такой вариант достаточно портируемый. Лицензирован под <a href="http://www.mozilla.org/MPL/">MPL</a>. Архитектуру можно почитать <a href="http://www.microwindows.org/microwindows_architecture.html">здесь</a>, советую обратить внимание на раздел Screen Driver</p>
+
+<p><strong>Embedded Qt</strong></p>
+
+<p><a href="http://qt-project.org/doc/qt-4.8/qt-embedded-linux.html">http://qt-project.org/doc/qt-4.8/qt-embedded-linux.html</a></p>
+
+<p>Встраиваемая версия Qt работающая поверх linux framebuffer. Очень интересный вариант. Что такое Qt думаю пояснять не стоит, а вот про то, что такое фреймбуфер можно почитать <a href="http://tldp.org/HOWTO/Framebuffer-HOWTO/">здесь</a>.</p>
+
+<p><strong>Итого</strong></p>
+
+<p>Есть еще несколько слишком абстрактных вариантов, типа Tcl\Tk порт, но наиболее интересными мне кажутся варианты с Microwindows и Embedded Qt.</p>
+
+    
+    <span class="tags">
+        
+        <a href="/UEFI/">UEFI</a>
+        
+    </span>
+
+  </article>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page4">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="/page2">Newer</a>
+    
+  
+</div>
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

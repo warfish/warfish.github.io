@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Extensible Boot Platform &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Extensible Boot Platform</h1>
+  <time datetime="2013-05-13T21:15:14+07:00" class="post-date">13 May 2013</time>
+  <p><em>Problem statement:</em></p>
+
+<p>Есть определенное количество кода, который должен работать до загрузки операционной системы. Bootloader, особенно те, что работают на тонких клиентах. Агенты preboot authentication и низкоуровнего форматирования дисков. Антивирусные сканеры и антируткиты. Всем им нужен определенный функционал и исполняемое окружение. Исторически таким окружением служит <a href="http://en.wikipedia.org/wiki/BIOS">BIOS</a> в реальном (в лучшем случае защищенном) режиме. В последнее время <a href="http://www.uefi.org/">UEFI</a>.</p>
+
+<p>Неудобство такого окружения в том, что даже в защищенном режиме нет защиты памяти, поддержки дополнительных устройств (сеть, USB), нормального пользовательского ввода и вывода. С появлением UEFI ситуация улучшается, но появляется проблема двух платформ.</p>
+
+<p><em>Vision</em>:</p>
+
+<p>Extensible Boot Platform - платформа, портируемая на BIOS и UEFI, расширяемая пользовательским кодом бизнес логики. Предоставляет набор runtime сервисов для клиентского кода, среду выполнения с защитой памяти, абстрагированный доступ к современной аппаратуре и простую драйверную модель. Ориентирована на поддержку загрузчиков ОС с продвинутыми функциями.</p>
+
+<p><em>Must have:</em></p>
+
+<ul>
+<li><p>Execution in protected mode with memory protection</p></li>
+<li><p>Modern hardware support: PCI, (IO-)APIC, AHCI, USB.</p></li>
+<li><p>Network support: Ethernet, UDP, IP.</p></li>
+<li><p>CRT subset implementation and support for modern compilers</p></li>
+<li><p>Hardware state management to support chainboot into host OS.</p></li>
+<li><p>Fast boot time</p></li>
+</ul>
+
+<p><em>Nice to have:</em></p>
+
+<ul>
+<li><p>Unicode</p></li>
+<li><p>Simplistic GUI toolkit with pointer device support</p></li>
+<li><p>Localization</p></li>
+<li><p>File systems</p></li>
+</ul>
+
+<p><em>Non-issue, что не включается в скоуп:</em></p>
+
+<ul>
+<li><p>SMP</p></li>
+<li><p>Processes and threads.</p></li>
+<li><p>Users, user context and user rights management</p></li>
+<li><p><a href="http://en.wikipedia.org/wiki/Paging">Paging</a></p></li>
+</ul>
+
+<p><em>Почему EBP это не UEFI:</em></p>
+
+<p>UEFI отвечает за низкоуровневую инициализацию железа, зависимую от конкретной модели чипсета и топологии устройств на отдельно взятой материнской плате. EBP предоставляет слой абстракции над UEFI, унифицируя набор предоставляемых сервисов как между версиями UEFI так и между Legacy BIOS и UEFI.</p>
+
+<p><em>Почему EBP это не однопроцессная ОС:</em></p>
+
+<p>EBP существует в виде библиотеки бинарного кода, реализующей предоставляемые сервисы и статически линкующейся с пользовательским кодом для получения исполняемого образа ядра. Пользовательский код не существует в виде одного отдельного исполняемого процесса, вместо этого он  является полезной нагрузкой самого ядра.</p>
+
+<p><em>Почему EBP это не GRUB:</em></p>
+
+<p>EBP не выполняет функцию загрузчика ОС сам по себе. Вместо этого он ориентирован на делегирование пользовательскому коду любого реально полезного функционала, четко разграничивая свою зону ответственности и явно предоставляя сервисы для поддержки расширений.</p>
+
+<p><em>Модель разработки:</em></p>
+
+<p>Open-source, максимальное заимствование кода драйверов и стеков протоколов.</p>
+
+<p><em>Это реально сделать?</em></p>
+
+<p>Все реально сделать имея неограниченные ресурсы. Не имея неограниченных ресурсов все можно попытаться оценить, представить сроки, стоимость и принять взвешенное решение. И именно так я и <strong>не</strong> ответил на этот вопрос сам :)</p>
+
+  <span class="tags">
+      
+      <a href="/preboot/">preboot</a>
+      
+      <a href="/unrealistic ideas/">unrealistic ideas</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

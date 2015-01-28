@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      О пользе UEFI спецификации в не-UEFI девелопменте. &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">О пользе UEFI спецификации в не-UEFI девелопменте.</h1>
+  <time datetime="2013-05-19T19:04:03+07:00" class="post-date">19 May 2013</time>
+  <p>Вообще, если абстрагированно взглянуть на UEFI спеку, то можно использовать ее в качестве готовой документации на контракты интерфейсов различных сервисов пребута. Например, посмотрите на относительно простой протокол SIMPLE<em>TEXT</em>OUTPUT_PROTOCOL (11.4). Спецификация явно декларирует такие вещи как в каких ситуация и как производится перевод позиции текстового курсора:</p>
+
+<p>Table 90. EFI Cursor Location/Advance Rules (страница 430)</p>
+
+<p>Mnemonic Unicode Description</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Null     U+0000  Ignore the character, and do not move the cursor.
+BS       U+0008  If the cursor is not at the left edge of the display, 
+                 then move the cursor left one column.
+LF       U+000A  If the cursor is at the bottom of the display, then scroll 
+                 the display one row, and do not update the cursor position. 
+                 Otherwise, move the cursor down one row.
+CR       U+000D  Move the cursor to the beginning of the current row.
+Other    U+XXXX  Print the character at the current cursor position 
+                 and move the cursor right one column. 
+                 If this moves the cursor past the right edge of the display, 
+                 then the line should wrap to the beginning of the next line. 
+                 This is equivalent to inserting a CR and an LF. 
+                 Note that if the cursor is at the bottom of the display, 
+                 and the line wraps, then the display will be scrolled one line.
+</code></pre></div>
+<p>На мой взгляд это отличная готовая спецификация контракта на интерфейс сервиса печати на текстовую консоль в пребуте, UEFI или не UEFI.</p>
+
+  <span class="tags">
+      
+      <a href="/preboot/">preboot</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

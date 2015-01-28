@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      [UEFI Emulation] Localized input and output &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">[UEFI Emulation] Localized input and output</h1>
+  <time datetime="2013-06-25T22:35:11+07:00" class="post-date">25 Jun 2013</time>
+  <p>Следующая цель прототипирования: локализованный ввод и вывод. Мы хотим, чтобы пользователь мог ввести свой логин и пароль на своем родном языке и чтобы мы могли локализовать ему пребут. Это означает, что нам нужна поддержка:</p>
+
+<ul>
+<li><p>Юникодных строк и их рендеринга на графический дисплей.</p></li>
+<li><p>Клавиатурных раскладок с маппингом на юникодные символы.</p></li>
+</ul>
+
+<p>Что на данный момент удалось получить от EDK/Duet.</p>
+
+<p>Сначала о выводе юникода на экран. Вообще весь UEFI и EDK юникодные (UTF16). Для вывода юникодных строк на дисплей UEFI предоставляет описание шрифта: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_SIMPLE_FONT_PACKAGE_HDR">http://wiki.phoenix.com/wiki/index.php/EFI<em>HII</em>SIMPLE<em>FONT</em>PACKAGE_HDR</a>. Это по сути таблица маппинга UTF16 кода символа на глиф размером либо 9x19 либо 16x19 пикселей. EDK предоставляет драйвер графической консоли, который учитывает наборы этих шрифтов и рендерит каждый символ в UTF16 строке согласно ее глифу, учитывая переносы строк, слияние границ символов и т.д. И это достаточно много очень противного кода.</p>
+
+<p>Модель для разработчика получается такая: чтобы поддержать печать текста например на русском языке надо изготовить таблицу глифов для каждого UTF16 символа этого языка, загрузить ее в рантайме и автомагически вся печать на дисплей будет работать. Есть также более продвинутое описание шрифтов, не привязанное к размеру глифа: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_FONT_PACKAGE_HDR">http://wiki.phoenix.com/wiki/index.php/EFI<em>HII</em>FONT<em>PACKAGE</em>HDR</a>.</p>
+
+<p>Никто не запрещает поступить как grub2 - сделать большой шрифт со всеми нужными языками в одном пакете и грузить его целиком. Никто не запрещает взять векторный шрифт и отрендерить его в нужно размере получив таким образом растр. В общем с этой стороны поддержку можно считать достаточной.</p>
+
+<p>Теперь о вводе. UEFI предоставляет в том же пакете HII (Human Interface Infrastructure) еще один тип ресурсов - клавиатурные раскладки: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_HII_KEYBOARD_LAYOUT">http://wiki.phoenix.com/wiki/index.php/EFI<em>HII</em>KEYBOARD_LAYOUT</a>. Раскладка это таблица маппинга скан кода на UTF16 код символа + флаги: <a href="http://wiki.phoenix.com/wiki/index.php/EFI_KEY_DESCRIPTOR">http://wiki.phoenix.com/wiki/index.php/EFI<em>KEY</em>DESCRIPTOR</a>. Здесь маппинг уже не такой прямой как в случае со шрифтами. В поле атрибутов можно указать ряд флагов, а клавиатурный драйвер будет их учитывать и изменять свое внутреннее состояние в зависимости от нажатой клавиши. Например через флаги EFI<em>NS</em>KEY<em>MODIFIER и EFI</em>NS<em>KEY</em>DEPENDENCY_MODIFIER реализуется поддержка &quot;мертвых клавиш&quot;.</p>
+
+<p>Модель для разработчика выглядит примерно так же как и в случае со шрифтами: чтобы поддержать ввод символов например на русском языке нужно изготовить таблицу дескрипторов и загрузить ее в рантайме. Но как оказалось тут кроется подстава. В EDK две реализации клавиатурного драйвера: <a href="http://sourceforge.net/p/tianocore/edk2/ci/master/tree/MdeModulePkg/Bus/Usb/UsbKbDxe">UsbKbDxe</a> и <a href="http://sourceforge.net/p/tianocore/edk2/ci/master/tree/IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe">Ps2KeyboardDxe</a>. Первый - драйвер USB клавиатуры, а второй - PS2, работающий через <a href="http://en.wikipedia.org/wiki/Intel_MCS-48">Intel 8042</a> контроллер. Как оказалось раскладки поддерживает только драйвер USB клавиатуры. Соответвенно для PS2 клавиатур нужно портировать код обработки раскладок.</p>
+
+<p>Ситуацию усложняет еще и так называемый Lеgacy USB. Это стандартная фича USB контроллеров и биосов когда USB клавиатура эмулируется как PS/2 устройство через Intel 8042. Т.е. в большинстве случаев даже если в машину воткнута клавиатура через настоящий USB порт, то биос видит ее как PS/2 клавиатуру. Это можно исправить в ту или другую сторону, но проще не становится.</p>
+
+<p>Итого. При условии что у нас есть драйвер PS/2 клавиатуры, который умеет работать с раскладками, то получается такой псевдокод добавление поддержки национальных символов:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">для каждого поддерживаемого языка:
+    сгенерировать растровый шрифт национальных символов
+    нарисовать раскладку клавиатуры с учетом диакритиков, мертвых клавиш и т.д.
+    протестировать с реальной клавиатурой
+конец
+</code></pre></div>
+<p>Для меня это не выглядит страшным, особенно если учесть, что можно избавится от первого шага сгенерировав &quot;большой&quot; юникодный шрифт один раз. Основная доля работы в раскладках и это будет точно не бесплатно, не из коробки, как в случае с линуксом например.</p>
+
+<p>Мне удалось за один рабочий день корявенько локализовать ввод и вывод на русский язык. Я сгенерировал кривой шрифт и нарисовал раскладку, пока не уперся в то, что VmWare эмулирует клавиатуру как PS/2 устройство, драйвер которого в EDK не понимает раскладки. Но если вынести проблему с драйвером за скобки, то получается примерно такие трудозатраты для относительно простого (и главное знакомого) языка.</p>
+
+  <span class="tags">
+      
+      <a href="/preboot/">preboot</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

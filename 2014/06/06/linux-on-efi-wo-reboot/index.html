@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Possible solution to Linux on EFI w/o reboot &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Possible solution to Linux on EFI w/o reboot</h1>
+  <time datetime="2014-06-06T11:26:19+07:00" class="post-date">06 Jun 2014</time>
+  <p>Как можно реализовать линукс без перезагрузки на EFI:</p>
+
+<ol>
+<li><p>При передаче управления из EFI в Linux нужно проделать ряд операций:</p>
+
+<ol>
+<li>Позвать DisconnectController чтобы отключить все драйвера периферийных устройств (ввод/вывод, сеть, диск, USB)</li>
+<li>Получить актуальную карту памяти EFI и сохранить как ее, так и саму память, занятую EFI. По возможности сдампить ее на диск</li>
+<li>Отключить прерывания, сохранить адрес IDT фирмвари и настройки контроллера прерываний.</li>
+<li>Сохранить весь контекст выполнения (сегменты, регистры, адрес стека, etc.), примерно тоже самое что и setjmp/makecontext</li>
+</ol></li>
+<li><p>Запустить ядро, юзермодный аппликейшен.</p></li>
+<li><p>Позвать kexec чтобы выполнить код в защищенном режиме который:</p>
+
+<ol>
+<li>Восстанавливает карту памяти и память фирмвари сохраненную в пункте 1.b.</li>
+<li>Восстановить IDT фирмвари и настройки контроллера прерываний сохраненные в пункте 1.c.</li>
+<li>Восстановить контекст выполнения из пункта 1.d. (по сути сделать longjmp/setcontext), включить прерывания.</li>
+<li>Позвать ConnectController для подключения драйверов к периферийным устройствам.</li>
+</ol></li>
+</ol>
+
+<p>Суть подхода в том, чтобы рассматривать контекст выполнения фирмвари как выгружаемую задачу, сохранить и выгрузить ее, а затем восстановить обратно. Теоретически можно даже модифицировать планировщик задач ядра так чтобы он часть грязной работы сделал сам. DisconnectController / ConnectController в теории позволяет решить проблему с состоянием железа после возврата из ядра, т.к. ConnectController должен заново запустить инициализацию драйверов фирмвари, которые должны привести свои девайсы в известное состояние.</p>
+
+<p>Весь подход держится на поведении ConnectController и драйверов фирмвари. Если они не следуют EFI Driver Binding модели, что теоретически возможно, то переинициализация устройств будет затруднительной. Как показала практика, в реальности опасно опираться на соответствие фирмвари чему-то из советов UEFI спецификации.</p>
+
+  <span class="tags">
+      
+      <a href="/crazy ideas/">crazy ideas</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

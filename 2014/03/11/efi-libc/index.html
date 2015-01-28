@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      EFI libc &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">EFI libc</h1>
+  <time datetime="2014-03-11T23:40:20+07:00" class="post-date">11 Mar 2014</time>
+  <p>EDK преследует архитектуру library classes, которая позволяет им обернуть самый безобидный интерфейс, типа ASSERT, в полиморфную библиотеку у которой есть один интерфейс и много реализаций. Конкретная &quot;инстанциация&quot; этого полиморфного интерфейса задается в их билд системе через DSC файл. Реализация C99 stdlib, <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/">EDK/StdLib</a>, которую они взяли из Open/Net/Free BSD и жестко мутировали, работает также. Например memcmp у них <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/String/Comparison.c#l29">реализована</a> через BaseMemoryLib/CompareMem. Такая архитектура позволяет им задавать реализации библиотек для разных этапов загрузки системы (Pei, Dxe, Bbs, Runtime) и местами кажется очень мощной. Но не понятно зачем она нужна в stdlib если они ограничили линковку своей реализации только до EFI_APPLICATION, т.е. только до стадии boot loader-а. Если по-другому, то в результате из реализацию нельзя линковать с EFI драйвером например, хотя бы ради того же memcmp.</p>
+
+<p>Еще один неприятный момент в их реализации - она зависит от EFI shell. В реализации stdio у них скорее всего встал вопрос, как интерпретировать файловые пути где-нибудь в fopen? Ответ такой - через шелл. Их реализация реализует (sic) NetBSD сисколлы через &quot;драйвера устройств&quot;, которые показывают на <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/Uefi/Devices/UefiShell/daShell.c">маппинги файловых систем в шелле</a>. В результате проблема решена, но появляется жесткая зависимость от шелла. Эта зависимость явно отражена в <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/Main/Main.c#l131">реализации точки входа</a>. Также шелл позволяет им ввести понятие аргументов командной строки.</p>
+
+<p>Есть еще россыпь проблем поменьше: типа неготовность их хедеров к компиляции в плюсовом юните трансляции, переопределение флагов компиляции в inf файле, реализация realloc которая <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/StdLib/Malloc.c#l40">опирается</a> на их же собственные приватные структуры кучи из реализации DxeCore, что делает опасным ее использование на реальном железе где куча реализована иначе. Ну и как и все остальное в EDK она непредназначена для линковки с проектами вне дерева EDK.</p>
+
+<p>Все это заставляет задуматься, а зачем? Возьмем например memcmp. Нужно было <em>выкинуть</em> реализацию чтобы заменить ее своей, через полиморфную либу. Можно было опереться на EFI<em>SIMPLE</em>FILE<em>SYSTEM в реализации fopen приняв например схему с эмуляцией дерева фс через гуиды разделов (/Volume{GUID}/...). Можно было заинвертировать зависимость опубликовав свой кастомный протокол, EDK</em>LIBC_ARGS например, инстанс которого клиент бы вешал на хендл слинкованного с StdLib приложения. Тоже самое можно было бы сделать и с stdio тоже. Под эту схему и шелл бы подошел. But alas.</p>
+
+<p>И вот конструктивная часть поста. Мне интересно насколько трудоемкий вариант выдернуть реализацию StdLib из EDK и сделать ее зависимой только от UEFI spec. Может быть было бы проще начать с нуля, т.е. с BSD libc и портировать ее. Не знаю, но что-то сделать руки чешутся.</p>
+
+  <span class="tags">
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

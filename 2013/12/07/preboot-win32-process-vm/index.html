@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Preboot Win32 process VM &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Preboot Win32 process VM</h1>
+  <time datetime="2013-12-07T13:08:59+07:00" class="post-date">07 Dec 2013</time>
+  <p><a href="http://en.wikipedia.org/wiki/Virtual_machine">http://en.wikipedia.org/wiki/Virtual_machine</a>:</p>
+
+<blockquote>A process VM, sometimes called an _application virtual machine_, or _Managed Runtime Environment_ (MRE), runs as a normal application inside a host OS and supports a single process. It is created when that process is started and destroyed when it exits. Its purpose is to provide a [platform](http://en.wikipedia.org/wiki/System_platform)-independent programming environment that abstracts away details of the underlying hardware or operating system, and allows a program to execute in the same way on any platform.</blockquote>
+
+<p>Process VM эмулирует окружение для иденственного процесса. Эмуляция заключается в основном в реализации ABI платформы и стоящего за ним рантайма. Под ABI в данном случае подразумеваются как правило механизм и реализация подобия системных вызовов платформы. Если хостовая <a href="http://en.wikipedia.org/wiki/Industry_Standard_Architecture">ISA</a> отличается от той, для которой собран таргет, то тогда эмуляция включает в себя и бинарную трансляцию target ISA - host ISA. Референсной реализацией считается <a href="http://en.wikipedia.org/wiki/FX%2132">FX!32</a></p>
+
+<p>Если ближе к пребуту, то скоуп такой: на входе имеем win32 PE/PE+ dll однопоточный модуль, который слинкован с родным MS CRT и тянет ряд платформенных ABI зависимостей, как правило в форме импортов kernel32 / ntdll. ISA таргета и хоста совпадают. Помимо загрузки, релокации и разрешения импортов PE laundry list полноценной реализации окружения и ABI примерно такой:</p>
+
+<ul>
+<li><p>Куча процесса (kernel32!HeapXXX). Как показала практика тут полезна отдельная куча чтобы не лезть в приватные структуры данных хостовой кучи и иметь возможность отделить аллокации таргета от хоста и трассировать их для отладки.</p></li>
+<li><p>Контейнер виртуальной файловой системы процесса для подгрузки модулей по имени, загрузки UI ресурсов, etc.</p></li>
+<li><p>TLS, FLS, переменные окружения, настройки кодовой страницы для конвертации строк, - все в контексте таргета.</p></li>
+<li><p>Манагмент дополнительных загружаемых библиотек таргета(kernel32!LoadLibrary).</p></li>
+<li><p>Динамическое связывание с импортами вызова VM монитора, если процесс знает о его существовании. В нашем случае знает и должен знать во избежании импортов GDI для рисования UI.</p></li>
+<li><p>Реализация второстепенных системных вызовов типа записи на консоль, остановки процесса и т.п.</p></li>
+</ul>
+
+<p>При переходе от однопоточного к многопоточному таргету появляется CreateThread и примитивы синхронизации, и все это возможно реализовать, правда гораздо дороже чем все описанное выше.</p>
+
+<p>Однако до CreateThread существует другой &quot;Nice to have&quot; - поддержка таргетов, состоящий из нескольких модулей. Например поддержка таргета, который линкуется с Qt динамически, а не статически. Проблема с такими таргетами в том, что в отличии от импортов, являющихся часть эмулируемого ABI, VMM ничего не знает о qt.dll и должен опираться на какую-то абстракцию файловой системы для их загрузки и связывания.</p>
+
+<p>Общий поинт в том, что рассматривая пребут на определенном уровне как win32 process VM можно получить четкую модель реализации, которая сама по себе является портируемой на другие реализации пребута (в частности Win32 эмуляцию).</p>
+
+  <span class="tags">
+      
+      <a href="/preboot/">preboot</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

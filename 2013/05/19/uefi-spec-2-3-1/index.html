@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      UEFI 2.3.1 - User Interface Infrastructure &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">UEFI 2.3.1 - User Interface Infrastructure</h1>
+  <time datetime="2013-05-19T18:36:25+07:00" class="post-date">19 May 2013</time>
+  <p>Выгрузил последнюю спецификацию UEFI API: <a href="https://dl.dropboxusercontent.com/u/42224890/UEFI_Spec_2_3_1.pdf">https://dl.dropboxusercontent.com/u/42224890/UEFI<em>Spec</em>2<em>3</em>1.pdf</a></p>
+
+<p>Интересные для PBA UI вещи находятся в пунктах 28 и 29. Описывают user interface infrastructure, клавиатурные раскладки, шрифты и формы ввода. Если быстро пробежаться по реализациям этого кода в tianocore, то, на первый взгляд, кажется что они зависят от следующих вещей (цифры указывают на раздел спецификации):</p>
+
+<ol>
+<li><p>Simple Text Input protocol - 11.3</p></li>
+<li><p>Simple Text Output protocol - 11.4</p></li>
+<li><p>Simple Pointer Protocol - 11.5</p></li>
+<li><p>Absolute Pointer Protocol - 11.7</p></li>
+<li><p>Graphics Output Protocol - 11.9</p></li>
+</ol>
+
+<p>Поддержка юникода (UTF16LE) идет через реализацию стандартной библиотеки, т.е. опять же прикладной код, который я правда еще не копал, но думаю что он зависит в основном от менеджера памяти. В результате пока что это все зависимости прикладного кода поддержки UI в уефае которые я нашел. При наличии stdlib с уникодом их достаточно несложно реализовать через BIOS. Самый сложный это пожалуй Absolute Pointer Protocol.</p>
+
+  <span class="tags">
+      
+      <a href="/preboot/">preboot</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

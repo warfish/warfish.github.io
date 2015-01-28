@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      SMM баги биоса &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">SMM баги биоса</h1>
+  <time datetime="2014-09-12T10:59:05+07:00" class="post-date">12 Sep 2014</time>
+  <p>Есть подозрение на аппаратный/SMM баг USB Legacy Support на Dell Optiplex 790.</p>
+
+<p>Имеем данную машину и подключенные к ней USB клаву и мышь, которые работают через виртуальный 8042 PS/2 контроллер через USB Legacy Support. Биос настраивает виртуальный 8042 так, что сканирование KBD порта разрешено, а сканирование AUX порта отключено. Хучим в риалмодной IDT IRQ1 (PS/2 KBD port interrupt) и IRQ12 (PS/2 AUX port interrupt) исключая код биоса. Хук IRQ1 предсказуемо срабатывает на клавиатурные события, а хук IRQ12 предсказуемо молчит на мышиные события. Затем включаем на контроллере сканирование AUX порта. Сразу после этого контроллер перестает триггерить <em>все</em> IRQ, нет событий ни от клавы ни от мыши. Все из реального режима.</p>
+
+<p>Замена IRQ хендлеров в IDT исключает ring0 код биоса. Код включения сканирования порта крайне простой и работает на всех остальных конфигурациях. Остается только SMM код биоса (USB Legacy Support генерирует SMI) и аппаратную реализацию. __</p>
+
+<p>Решить эту проблему нельзя, ее можно только обойти. Для этого нужно сначала отключить USB legacy support, а затем инициализировать PS/2 драйвера уже для настоящего контроллера. Отключение legacy support на EHCI происходит через машину состояний:</p>
+
+<ol>
+<li><p>В определенном регистре контроллера OS выставляет бит &quot;я хочу контроллер&quot;.</p></li>
+<li><p>Срабатывает SMM прерывание в котором биос должен подготовить контроллер к передаче и сбросить другой бит &quot;биос отдал контроллер&quot;. Как только этот бит выставлен процесс передачи контроллера можно считать законченным.</p></li>
+</ol>
+
+<p>На этой машине сидят два EHCI контроллера. Один из них успешно прошел этот процесс, а второй отказывается сбрасывать бит владения биосом. При этом видно, что SMM прерывания с него перестали работать, т.е. биос его реально отдал. Эту проблему решил уже апдейт биоса :)</p>
+
+  <span class="tags">
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

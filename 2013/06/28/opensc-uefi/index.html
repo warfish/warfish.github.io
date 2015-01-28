@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      OpenSC / UEFI &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">OpenSC / UEFI</h1>
+  <time datetime="2013-06-28T22:33:05+07:00" class="post-date">28 Jun 2013</time>
+  <p>Чтобы портировать связку libopensc/libopenct нужно:</p>
+
+<ol>
+<li><p>Затащить StdLib. В EDK есть реализация: <a href="http://sourceforge.net/p/tianocore/edk2/ci/master/tree/StdLib/">http://sourceforge.net/p/tianocore/edk2/ci/master/tree/StdLib/</a>. Есть небольшое неудобство - ванильная реализация StdLib в EDK линкуется только с UEFI<em>APPLICATION (а не DXE</em>DRIVER). Поэтому PBA <em>везде</em> должен быть аппликейшеном. Либо можно распилить StdLib на части и копилировать сишники. Тоже вариант.</p></li>
+<li><p>Написать реализацию функций ifd<em>sysdep</em>usb_* в OpenCT. Вот пример порта на <a href="http://www.libusb.org/">libusb</a>/Linux: <a href="https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c">https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c</a>.</p></li>
+<li><p>Вытравить зависимости от файловой системы в вспомогательном коде OpenCT. Например у него есть конфиг, который он при инициализации парсит из файла и т.д.</p></li>
+<li><p>Выкинуть все &quot;ненужное&quot;. Например общение с токенами по серийному порту.</p></li>
+</ol>
+
+<p>Вместо пункта 2 (порт ifd<em>sysdep</em>usb_*) можно подойти к вопросу фундаментальнее - портировать libusb. Эта либа своего рода стандартный API доступа к USB устройствам на линуксе. На нее портировано много всего, включая OpenCT. Если портануть ее, то это дает гибкость, можно не портировать USB стек второй раз в какой-нибудь другой либе. Но это медленнее, потому что libusb больше.</p>
+
+  <span class="tags">
+      
+      <a href="/crypto/">crypto</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

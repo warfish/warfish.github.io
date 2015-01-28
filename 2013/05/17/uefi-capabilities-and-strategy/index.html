@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      UEFI capabilities and strategy &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Posts</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">UEFI capabilities and strategy</h1>
+  <time datetime="2013-05-17T22:04:12+07:00" class="post-date">17 May 2013</time>
+  <p>Что может UEFI:</p>
+
+<ol>
+<li><p>Сетевые драйвера, дисковые драйвера, USB, драйвера графической консоли.</p></li>
+<li><p>UefiToolkit предоставляет прикладную поддержку сетевых проколов (IP, UDP, TFTP, DHCP, TCP), input form UI, unicode, реализацию stdlib и другой прикладной код. Реализован поверх интерфейсов устройств из пункта 1.</p></li>
+<li><p>Работа в защищенном режиме с пейджингом в плане защиты памяти</p></li>
+<li><p>PE/COFF бинарники, которые можно тестировать в пользовательском режиме.</p></li>
+</ol>
+
+<p>Т.е. для реализации MBO нам нужны &quot;только&quot; драйвера токенов. К сожалению, кроме UEFI систем есть еще и legacy BIOS cистемы, и их достаточно много. На этих системах нет почти ничего из описанных интерфейсов, кроме дисков и сырой видео памяти.</p>
+
+<p>Итого мы получаем две платформы: legacy BIOS и UEFI. С точки зрения удобства разработки нам нужна одна платформа, чтобы уменьшить набор тестовых конфигураций и максимально повысить переиспользование кода. Для этого нам нужна платформа, которая выравнивает обе предыдущие. При этом, если ставить во главу угла пользовательский экспириенс, то мы должны обеспечить быструю загрузку PBA и прозрачное продолжение загрузки машины после прохождения PBA.</p>
+
+<p>На UEFI системах мы <em>пока</em> не представляем как обеспечить прозрачное продолжение загрузки кроме как написать нативное UEFI приложение. Попытки выполнить это на BIOS-e пока приводят к смешанным результатам. Поэтому рождается такой вариант:</p>
+
+<ul>
+<li><p>Использовать в качестве общей платформы UEFI, в плане спецификации его API.</p></li>
+<li><p>В качестве реализации платформы на UEFI системах использовать саму прошивку</p></li>
+</ul>
+
+<p>Что делать с legacy BIOS системами? Реализовать требуемый набор UEFI интерфейсов поверх слепленного комка из самого биоса, <a href="http://ipxe.org/">iPXE</a> для поддержки сети и barebones USB (из состава coreboot) для поддержки USB стека.</p>
+
+<p>Таким образом клиентский код PBA написан против UEFI API, вот только на BIOS мы реализуем этот API сами.</p>
+
+<p>Плюсы такого подхода:</p>
+
+<ul>
+<li><p>Одна платформа, переиспользование кода</p></li>
+<li><p>Нативное UEFI приложение на UEFI системах работает максимально быстро, обеспечивает прозрачную перезагрузку из коробки.</p></li>
+<li><p>На BIOS системах можно использовать прикладной код из UEFI toolkit, потому как наша реализация предоставляет необходимые интерфейсы устройств. Это значит что мы получаем прикладной код сетевых протоколов, UI и stdlib.</p></li>
+<li><p>Никаких проблем с состоянием аппаратуры на обоих платформах.</p></li>
+<li><p>Возможность развернуть инфраструктуру разработки, отладки и автоматической сборки на одной платформе с остальным кодом решения (проще говоря, собирать все на винде и не тянуть линукс).</p></li>
+<li><p>Возможность распараллелить разработку. Один девелопер портирует текущий код и пишет новый для UEFI, второй девелопер наращивает Legacy BIOS до нужного подмножества реализации UEFI API</p></li>
+</ul>
+
+<p>Минусы:</p>
+
+<ul>
+<li><p>Драйвера токенов.</p></li>
+<li><p>Обеспечивается поддержка только той аппаратуры что нужна именно на ближайший период, не хватает задела на будущее, особенно для экзотических вещей типа сканеров отпечатков пальцев.</p></li>
+<li><p>Нехилая задача по реализации подмножества UEFI спецификации. Однако есть подспорье в виде <a href="http://sourceforge.net/apps/mediawiki/tianocore/index.php?title=DuetPkg">DuetPkg</a> и <a href="http://sourceforge.net/projects/cloverefiboot/">Clover</a></p></li>
+</ul>
+
+<p>Если ссумировать сказанное, то на мой взгляд нам так или иначе придется писать нативный UEFI код на UEFI системах, если мы хотим работать без перезагрузки. А если нам придется это делать, то мы в своем роде ограничены сверху именно UEFI. Поэтому почему бы не провести водораздел зависимости нашего кода именно на уровне спецификации UEFI API и доделать то, чего не хватает на legacy BIOS с помощью сторонних библиотек.</p>
+
+<p>Вопрос, что делать с токенами? Ответ: портировать линуксовую юзер модную реализацию libopensc на USB стек пребута.</p>
+
+  <span class="tags">
+      
+      <a href="/BIOS/">BIOS</a>
+      
+      <a href="/preboot/">preboot</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+  </span>
+</article>
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/27/hello-github-pages/">
+            Hello github.io
+            <small><time datetime="2015-01-27T00:00:00+06:00">27 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-28T16:58:00+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>
