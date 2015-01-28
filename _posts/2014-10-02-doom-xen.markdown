@@ -1,0 +1,11 @@
+---
+author: wrfsh
+comments: true
+date: 2014-10-02 13:55:56+00:00
+layout: post
+slug: doom-xen
+title: DOOM / Xen
+wordpress_id: 412
+---
+
+So i'm learning about Xen now and instead of writing a typical hello world guest OS i've decided to port DOOM as a Xen guest kernel. Should be fun, let's see how it goes.

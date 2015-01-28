@@ -1,0 +1,23 @@
+---
+author: wrfsh
+comments: true
+date: 2013-05-11 16:18:44+00:00
+layout: post
+slug: coreboot
+title: CoreBoot
+wordpress_id: 13
+categories:
+- BIOS
+---
+
+[coreboot](http://coreboot.org/) это опен сорсная реализация нижней половины биоса. Нижней половины означает, что он не реализует API прерываний, GUI настроек и прочее. Все это делегирует payload-у в терминологии проекта. Вместо этого coreboot реализует инициализацию чипсета, устройств и запускает payload. Проект поддерживается многими производителями чипсетов, такими как AMD например (Intel продвигает UEFI).
+
+Это очень интересный проект по которому можно изучить что делает биос на самых первых этапах старта машины, еще из EEPROM. Ниже линки на особенно заинтересовавшие части:
+
+Старт прошивки в реальном режиме: [http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;h=e4613bf986c15d73e7ea70f72dc241d1539f3038;hb=HEAD](http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/16bit/entry16.inc;h=e4613bf986c15d73e7ea70f72dc241d1539f3038;hb=HEAD)
+
+Старт прошивки в защищенном режиме:[ http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc;h=f74e1b87374e2f11af1fa7b7f60e3c17da1d4f1c;hb=HEAD](http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/cpu/x86/32bit/entry32.inc;h=f74e1b87374e2f11af1fa7b7f60e3c17da1d4f1c;hb=HEAD)
+
+Точка входа инициализации устройств:[ http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/lib/hardwaremain.c;h=99b4a069b4ddabf6b79926bd482be54f6f1ab828;hb=HEAD](http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/lib/hardwaremain.c;h=99b4a069b4ddabf6b79926bd482be54f6f1ab828;hb=HEAD)
+
+Реализация общего драйвера PCI устройства: [http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/pci_device.c;h=4c5a81451c923072b48182cb198080823ab19402;hb=HEAD](http://review.coreboot.org/gitweb?p=coreboot.git;a=blob;f=src/device/pci_device.c;h=4c5a81451c923072b48182cb198080823ab19402;hb=HEAD)

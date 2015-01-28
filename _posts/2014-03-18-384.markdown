@@ -1,0 +1,104 @@
+---
+author: wrfsh
+comments: true
+date: 2014-03-18 10:07:46+00:00
+layout: post
+slug: '384'
+title: No Content Found
+wordpress_id: 384
+categories:
+- UEFI
+---
+
+Скучно без работы. Прочитал такую вещь в UEFI спеке в разделе с базовыми типами:
+<table >
+<tbody >
+<tr >
+
+<td >
+
+
+
+
+
+
+
+
+
+
+EFI_GUID
+
+
+
+
+
+
+
+
+
+</td>
+
+<td >
+
+
+
+
+
+
+
+
+
+
+128-bit buffer containing a unique identifier value. **Unless otherwise specified, aligned on a 64-bit boundary.**
+
+
+
+
+
+
+
+
+
+</td>
+</tr>
+<tr >
+
+<td >
+</td>
+
+<td >
+</td>
+</tr>
+</tbody>
+</table>
+В сурсах EDK тип объявлен так:
+
+
+<blockquote>
+
+>     
+>     ///
+>     /// 128 bit buffer containing a unique identifier value.
+>     /// Unless otherwise specified, aligned on a 64 bit boundary.
+>     ///
+>     typedef struct {
+>      UINT32 Data1;
+>      UINT16 Data2;
+>      UINT16 Data3;
+>      UINT8 Data4[8];
+>     } GUID;
+>     typedef GUID EFI_GUID;
+> 
+> 
+</blockquote>
+
+
+Т.е. если исключить алаисинг и касты случаных невыровненных адресов в указатель на EFI_GUID, то дефолтное выравнивание типа получаем по его первому члену, т.е. по 4 байта.
+
+Если EFI_GUID выделить на куче, то допустим что в качестве аллокатора в EFI среде используется EFI_BOOT_SERVICES::AllocatePool. Про него в спецификации написано, что "All allocations are eight-byte aligned". Вопрос закрыт.
+
+Если EFI_GUID аллоцировать на стеке на amd64, то там выравнивание стека соблюдет требование автоматически. На IA32 этого может и не быть. С секцией данных история примерно такая же как и со стеком.
+
+Получается что требование спецификации в EDK не соблюдено и тут возникает вопрос, а что будет то если оно не соблюдено? Зачем они вообще привязали этот тип к такому базовому выравниванию? У меня есть одна теория: на IA64 невыровненный доступ был очень чувствительным. Возможно они хотели выровнять гуид чтобы можно было быстро их сравнивать парой инструкций ручным ассемблером.
+
+

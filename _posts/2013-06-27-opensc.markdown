@@ -1,0 +1,36 @@
+---
+author: wrfsh
+comments: true
+date: 2013-06-27 14:09:26+00:00
+layout: post
+slug: opensc
+title: OpenSC
+wordpress_id: 176
+categories:
+- crypto
+---
+
+Смотрю на [OpenSC ](https://github.com/OpenSC/OpenSC) - библиотеку драйверов смарт карт и токенов. Наблюдаю интересные вещи. Сама либа не содержит вообще почти никаких платформенных зависимостей, не читает USB. Вместо этого похоже что она абстрагирует конкретный бекенд ридера карт и токенов через [sc_reader](https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/opensc.h#L284) и реализует адаптеры на три backend-а:
+
+
+
+	
+  * [CT-API](http://en.wikipedia.org/wiki/CT-API) - [https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/reader-ctapi.c](https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/reader-ctapi.c)
+
+	
+  * [PC/SC](http://en.wikipedia.org/wiki/PC/SC) -  [https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/reader-pcsc.c](https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/reader-pcsc.c)
+
+	
+  * [OpenCT](https://github.com/OpenSC/openct) - [https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/reader-openct.c](https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/reader-openct.c)
+
+
+Больше инфы по каждому варианту можно найти в вики проекта: [https://github.com/OpenSC/OpenSC/wiki/Creating-applications-with-smart-card-support#low-level-smart-card-access](https://github.com/OpenSC/OpenSC/wiki/Creating-applications-with-smart-card-support#low-level-smart-card-access)
+
+Все трое это внешние для OpenSC реализации, которые она адаптирует через сишный вариант полиморфизма в [sc_reader_operations](https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/opensc.h#L419). Я кстати очень люблю такой Pure C полиморфизм, но щас не об этом. Подход должен быть знаком сразу всем, кто писал драйвера для линуксового ядра.
+
+Так или иначе, по моему не самому глубокому 30-ти минутному вниканию я делаю вывод, что портировать на UEFI нужно будет реализацию одного из трех вариантов выше, а не самой OpenSC. У конкурентов на линуксе я почти всегда видел пару libopensc/libopenct, так что вот.
+
+Драйвер для eToken PRO находится здесь:[https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/card-cardos.c](https://github.com/OpenSC/OpenSC/blob/master/src/libopensc/card-cardos.c)
+
+Generic USB слой:[https://github.com/OpenSC/openct/blob/master/src/ifd/usb.c](https://github.com/OpenSC/openct/blob/master/src/ifd/usb.c)
+Опирается на платформенно-зависимые ifd_sysdep_usb_*. Реализация для линукса:[https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c](https://github.com/OpenSC/openct/blob/master/src/ifd/sys-linux.c)

@@ -1,0 +1,28 @@
+---
+author: wrfsh
+comments: true
+date: 2013-05-19 11:36:25+00:00
+layout: post
+slug: uefi-spec-2-3-1
+title: UEFI 2.3.1 - User Interface Infrastructure
+wordpress_id: 69
+categories:
+- preboot
+- UEFI
+---
+
+Выгрузил последнюю спецификацию UEFI API: [https://dl.dropboxusercontent.com/u/42224890/UEFI_Spec_2_3_1.pdf](https://dl.dropboxusercontent.com/u/42224890/UEFI_Spec_2_3_1.pdf)
+
+Интересные для PBA UI вещи находятся в пунктах 28 и 29. Описывают user interface infrastructure, клавиатурные раскладки, шрифты и формы ввода. Если быстро пробежаться по реализациям этого кода в tianocore, то, на первый взгляд, кажется что они зависят от следующих вещей (цифры указывают на раздел спецификации):
+
+1. Simple Text Input protocol - 11.3
+
+2. Simple Text Output protocol - 11.4
+
+3. Simple Pointer Protocol - 11.5
+
+4. Absolute Pointer Protocol - 11.7
+
+5. Graphics Output Protocol - 11.9
+
+Поддержка юникода (UTF16LE) идет через реализацию стандартной библиотеки, т.е. опять же прикладной код, который я правда еще не копал, но думаю что он зависит в основном от менеджера памяти. В результате пока что это все зависимости прикладного кода поддержки UI в уефае которые я нашел. При наличии stdlib с уникодом их достаточно несложно реализовать через BIOS. Самый сложный это пожалуй Absolute Pointer Protocol.
