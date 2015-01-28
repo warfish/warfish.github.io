@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # build _site contents
 jekyll build
