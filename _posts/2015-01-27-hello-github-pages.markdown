@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: post
 title: Hello github.io
 ---
 Hi, here's some code 

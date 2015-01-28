@@ -5,12 +5,12 @@ title: wrfsh
 tagline: 'My worklog'
 description: 'My worklog'
 url: warfish.github.io
-
+baseurl: /
 author:
     name: 'Evgeny Yakovlev'
     url:  warfish.github.io
 
-paginate: 1
+paginate: 10
 
 github:
     repo: https://github.com/warfish/warfish.github.io
