@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # build _site contents
+pushd _src
 jekyll build
 
 # move _site contents over to root
-cp -r _site/* ./
+cp -r _site/* ../
 
 # Touch .nojekyll to tell github not to run it
+popd
 touch .nojekyll
 
 
