@@ -8,7 +8,6 @@ title: Extensible Boot Platform
 wordpress_id: 20
 tags:
 - preboot
-- unrealistic ideas
 ---
 
 _Problem statement:_

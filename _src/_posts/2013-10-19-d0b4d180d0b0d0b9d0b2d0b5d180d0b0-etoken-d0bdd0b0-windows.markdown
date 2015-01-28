@@ -6,8 +6,6 @@ layout: post
 slug: '%d0%b4%d1%80%d0%b0%d0%b9%d0%b2%d0%b5%d1%80%d0%b0-etoken-%d0%bd%d0%b0-windows'
 title: Драйвера eToken на Windows
 wordpress_id: 273
-tags:
-- crazy ideas
 ---
 
 Я немного посмотрел устройство всего стека eToken на винде и вот что получилось:

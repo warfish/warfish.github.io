@@ -7,7 +7,6 @@ slug: linux-on-efi-wo-reboot
 title: Possible solution to Linux on EFI w/o reboot
 wordpress_id: 394
 tags:
-- crazy ideas
 ---
 
 Как можно реализовать линукс без перезагрузки на EFI:
