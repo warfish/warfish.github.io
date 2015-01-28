@@ -6,7 +6,7 @@ layout: post
 slug: cmos-as-a-persistent-secret-storage
 title: CMOS as a persistent secret storage
 wordpress_id: 112
-categories:
+tags:
 - BIOS
 - unrealistic ideas
 ---

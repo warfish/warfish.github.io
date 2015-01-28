@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-edk-vs-gnuefi
 title: '[DOOM-UEFI] EDK vs gnuefi'
 wordpress_id: 237
-categories:
+tags:
 - doom-uefi
 ---
 

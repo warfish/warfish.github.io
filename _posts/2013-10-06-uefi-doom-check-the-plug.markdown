@@ -6,7 +6,7 @@ layout: post
 slug: uefi-doom-check-the-plug
 title: '[UEFI-DOOM] Check the plug'
 wordpress_id: 248
-categories:
+tags:
 - doom-uefi
 ---
 

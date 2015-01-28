@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-title-screen
 title: '[DOOM-UEFI] Title screen'
 wordpress_id: 261
-categories:
+tags:
 - doom-uefi
 ---
 

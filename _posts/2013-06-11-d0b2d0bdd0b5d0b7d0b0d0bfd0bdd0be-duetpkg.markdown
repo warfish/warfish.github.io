@@ -6,7 +6,7 @@ layout: post
 slug: '%d0%b2%d0%bd%d0%b5%d0%b7%d0%b0%d0%bf%d0%bd%d0%be-duetpkg'
 title: Внезапно DuetPkg
 wordpress_id: 100
-categories:
+tags:
 - BIOS
 - UEFI
 ---

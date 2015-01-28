@@ -6,7 +6,7 @@ layout: post
 slug: libusb-porting-tips
 title: libusb porting tips
 wordpress_id: 195
-categories:
+tags:
 - UEFI
 ---
 

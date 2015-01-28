@@ -6,7 +6,7 @@ layout: post
 slug: uefi-capabilities-and-strategy
 title: UEFI capabilities and strategy
 wordpress_id: 57
-categories:
+tags:
 - BIOS
 - preboot
 - UEFI

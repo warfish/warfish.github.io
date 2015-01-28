@@ -6,7 +6,7 @@ layout: post
 slug: '%d1%81%d0%ba%d0%be%d0%bb%d1%8c%d0%ba%d0%be-%d1%81%d1%82%d0%be%d0%b8%d1%82-advanced-preboot-environment-%d1%81%d0%b2%d0%be%d0%b8%d0%bc%d0%b8-%d1%80%d1%83%d0%ba%d0%b0%d0%bc%d0%b8'
 title: Сколько стоит Advanced Preboot Environment своими руками.
 wordpress_id: 85
-categories:
+tags:
 - preboot
 ---
 

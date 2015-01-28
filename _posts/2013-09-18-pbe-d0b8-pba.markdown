@@ -6,7 +6,7 @@ layout: post
 slug: pbe-%d0%b8-pba
 title: PBE и PBA
 wordpress_id: 228
-categories:
+tags:
 - preboot
 ---
 

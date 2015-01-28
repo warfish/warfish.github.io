@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-day-1
 title: '[DOOM-UEFI] Day 1'
 wordpress_id: 231
-categories:
+tags:
 - doom-uefi
 ---
 

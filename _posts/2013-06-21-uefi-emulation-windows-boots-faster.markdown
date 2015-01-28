@@ -6,7 +6,7 @@ layout: post
 slug: uefi-emulation-windows-boots-faster
 title: '[UEFI Emulation] Windows boots (faster)'
 wordpress_id: 164
-categories:
+tags:
 - BIOS
 - preboot
 - UEFI

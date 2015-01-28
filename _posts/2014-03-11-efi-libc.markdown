@@ -6,7 +6,7 @@ layout: post
 slug: efi-libc
 title: EFI libc
 wordpress_id: 376
-categories:
+tags:
 - UEFI
 ---
 

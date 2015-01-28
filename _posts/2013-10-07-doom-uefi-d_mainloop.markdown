@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-d_mainloop
 title: '[DOOM-UEFI] D_MainLoop'
 wordpress_id: 258
-categories:
+tags:
 - doom-uefi
 ---
 

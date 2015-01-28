@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-alpha
 title: '[DOOM-UEFI] Alpha'
 wordpress_id: 268
-categories:
+tags:
 - doom-uefi
 ---
 

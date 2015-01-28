@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-simple-linear-scaling-to-active-resolution
 title: '[DOOM-UEFI] Simple linear scaling to active resolution'
 wordpress_id: 264
-categories:
+tags:
 - doom-uefi
 ---
 

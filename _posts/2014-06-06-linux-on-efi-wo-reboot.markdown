@@ -6,7 +6,7 @@ layout: post
 slug: linux-on-efi-wo-reboot
 title: Possible solution to Linux on EFI w/o reboot
 wordpress_id: 394
-categories:
+tags:
 - crazy ideas
 ---
 

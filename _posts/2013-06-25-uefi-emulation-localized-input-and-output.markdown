@@ -6,7 +6,7 @@ layout: post
 slug: uefi-emulation-localized-input-and-output
 title: '[UEFI Emulation] Localized input and output'
 wordpress_id: 168
-categories:
+tags:
 - preboot
 - UEFI
 ---

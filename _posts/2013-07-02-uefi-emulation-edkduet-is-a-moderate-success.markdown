@@ -6,7 +6,7 @@ layout: post
 slug: uefi-emulation-edkduet-is-a-moderate-success
 title: '[UEFI Emulation] EDK/Duet is a moderate success'
 wordpress_id: 201
-categories:
+tags:
 - BIOS
 - UEFI
 ---

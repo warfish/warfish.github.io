@@ -6,7 +6,7 @@ layout: post
 slug: preboot-win32-process-vm
 title: Preboot Win32 process VM
 wordpress_id: 286
-categories:
+tags:
 - preboot
 ---
 

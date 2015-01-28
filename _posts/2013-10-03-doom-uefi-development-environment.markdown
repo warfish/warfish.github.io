@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-development-environment
 title: '[DOOM-UEFI] Development environment'
 wordpress_id: 239
-categories:
+tags:
 - doom-uefi
 ---
 

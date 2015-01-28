@@ -6,7 +6,7 @@ layout: post
 slug: opensc
 title: OpenSC
 wordpress_id: 176
-categories:
+tags:
 - crypto
 ---
 

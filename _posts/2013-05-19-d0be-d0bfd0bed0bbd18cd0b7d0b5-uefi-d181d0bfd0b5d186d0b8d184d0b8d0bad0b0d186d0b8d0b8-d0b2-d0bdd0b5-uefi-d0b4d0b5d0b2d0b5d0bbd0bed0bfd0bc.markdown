@@ -6,7 +6,7 @@ layout: post
 slug: '%d0%be-%d0%bf%d0%be%d0%bb%d1%8c%d0%b7%d0%b5-uefi-%d1%81%d0%bf%d0%b5%d1%86%d0%b8%d1%84%d0%b8%d0%ba%d0%b0%d1%86%d0%b8%d0%b8-%d0%b2-%d0%bd%d0%b5-uefi-%d0%b4%d0%b5%d0%b2%d0%b5%d0%bb%d0%be%d0%bf%d0%bc'
 title: О пользе UEFI спецификации в не-UEFI девелопменте.
 wordpress_id: 73
-categories:
+tags:
 - preboot
 - UEFI
 ---

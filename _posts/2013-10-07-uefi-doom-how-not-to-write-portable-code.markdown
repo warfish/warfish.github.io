@@ -6,7 +6,7 @@ layout: post
 slug: uefi-doom-how-not-to-write-portable-code
 title: '[UEFI-DOOM] How not to write portable code'
 wordpress_id: 252
-categories:
+tags:
 - doom-uefi
 ---
 

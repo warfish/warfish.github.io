@@ -6,7 +6,7 @@ layout: post
 slug: uefi-emulation-windows-boots-slowly
 title: '[UEFI Emulation] Windows boots (slowly)'
 wordpress_id: 162
-categories:
+tags:
 - UEFI
 ---
 

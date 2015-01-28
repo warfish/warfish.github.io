@@ -6,7 +6,7 @@ layout: post
 slug: uefi-emulation-biosthunk-and-protected-mode-versus-real-mode-interrupts
 title: '[UEFI Emulation] BiosThunk and protected mode versus real mode interrupts'
 wordpress_id: 154
-categories:
+tags:
 - preboot
 - UEFI
 ---

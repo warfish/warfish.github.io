@@ -6,7 +6,7 @@ layout: post
 slug: dell-optiplex-and-buggy-bioses
 title: Dell optiplex and buggy BIOSes
 wordpress_id: 52
-categories:
+tags:
 - BIOS
 - preboot
 ---

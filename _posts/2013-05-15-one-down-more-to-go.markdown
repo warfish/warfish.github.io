@@ -6,7 +6,7 @@ layout: post
 slug: one-down-more-to-go
 title: One down, more to go
 wordpress_id: 47
-categories:
+tags:
 - device state
 - preboot
 ---

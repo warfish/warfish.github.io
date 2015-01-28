@@ -6,7 +6,7 @@ layout: post
 slug: uefi-architecture-protocols-and-portable-dxe-core
 title: '[UEFI] Architecture protocols and portable DXE Core'
 wordpress_id: 369
-categories:
+tags:
 - UEFI
 ---
 

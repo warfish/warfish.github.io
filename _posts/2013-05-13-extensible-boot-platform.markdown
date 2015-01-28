@@ -6,7 +6,7 @@ layout: post
 slug: extensible-boot-platform
 title: Extensible Boot Platform
 wordpress_id: 20
-categories:
+tags:
 - preboot
 - unrealistic ideas
 ---

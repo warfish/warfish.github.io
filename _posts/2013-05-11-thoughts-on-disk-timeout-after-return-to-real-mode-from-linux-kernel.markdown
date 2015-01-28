@@ -6,7 +6,7 @@ layout: post
 slug: thoughts-on-disk-timeout-after-return-to-real-mode-from-linux-kernel
 title: Thoughts on disk timeout after return to real mode from linux kernel
 wordpress_id: 2
-categories:
+tags:
 - BIOS
 - device state
 ---

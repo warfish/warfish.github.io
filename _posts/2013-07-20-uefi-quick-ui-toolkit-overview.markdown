@@ -6,7 +6,7 @@ layout: post
 slug: uefi-quick-ui-toolkit-overview
 title: '[UEFI] Quick UI toolkit overview'
 wordpress_id: 221
-categories:
+tags:
 - UEFI
 ---
 

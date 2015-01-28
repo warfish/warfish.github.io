@@ -6,7 +6,7 @@ layout: post
 slug: coreboot
 title: CoreBoot
 wordpress_id: 13
-categories:
+tags:
 - BIOS
 ---
 

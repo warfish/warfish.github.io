@@ -1,11 +1,12 @@
 markdown: redcarpet
 highlighter: pygments
 permalink: pretty
-title: wrfsh
+title: 'My worklog'
 tagline: 'My worklog'
 description: 'My worklog'
 url: warfish.github.io
 baseurl: /
+
 author:
     name: 'Evgeny Yakovlev'
     url:  warfish.github.io

@@ -6,7 +6,7 @@ layout: post
 slug: 8259a-interrupt-controller-issues
 title: 8259A Interrupt controller issues
 wordpress_id: 17
-categories:
+tags:
 - BIOS
 - device state
 ---

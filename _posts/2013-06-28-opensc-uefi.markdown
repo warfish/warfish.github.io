@@ -6,7 +6,7 @@ layout: post
 slug: opensc-uefi
 title: OpenSC / UEFI
 wordpress_id: 191
-categories:
+tags:
 - crypto
 - UEFI
 ---

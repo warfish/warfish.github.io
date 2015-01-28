@@ -6,7 +6,7 @@ layout: post
 slug: uefi-emulation-dxecore
 title: '[UEFI Emulation] DxeCore'
 wordpress_id: 144
-categories:
+tags:
 - UEFI
 ---
 

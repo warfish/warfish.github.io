@@ -6,7 +6,7 @@ layout: post
 slug: uefi-spec-2-3-1
 title: UEFI 2.3.1 - User Interface Infrastructure
 wordpress_id: 69
-categories:
+tags:
 - preboot
 - UEFI
 ---

@@ -6,7 +6,7 @@ layout: post
 slug: doom-uefi-wad-files-and-edk-stdlib-problems
 title: '[DOOM-UEFI] WAD files and EDK stdlib problems'
 wordpress_id: 243
-categories:
+tags:
 - doom-uefi
 ---
 

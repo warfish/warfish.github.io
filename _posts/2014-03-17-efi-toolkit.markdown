@@ -6,7 +6,7 @@ layout: post
 slug: efi-toolkit
 title: EFI toolkit
 wordpress_id: 379
-categories:
+tags:
 - UEFI
 ---
 

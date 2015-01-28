@@ -6,7 +6,7 @@ layout: post
 slug: uefi-emulation-what-exactly-is-duetpkg
 title: '[UEFI Emulation] What exactly is DuetPkg'
 wordpress_id: 137
-categories:
+tags:
 - preboot
 - UEFI
 ---
