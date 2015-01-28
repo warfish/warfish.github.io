@@ -10,8 +10,11 @@
         <h2 class="masthead-title">
           <a href="{{ site.baseurl }}" title="Home">{{ site.title }}</a>
           <small><a href="https://github.com/warfish">GitHub</a></small>
-          <small><a href="{{ site.baseurl }}archive/">Posts</a></small>
+          <small><a href="{{ site.baseurl }}archive/">Archive</a></small>
+          <small><a href="{{ site.baseurl }}tags/">Tags</a></small>
         </h3>
+
+
       </header>
 
       <main>
@@ -25,5 +28,10 @@
       </footer>
     </div>
 
+    <!-- div class="sidebar">
+  {% for tag in site.tags %}
+  <a style="font-size: {{ tag | last | size | times: 100 | divided_by: site.tags.size | plus: 100 }}%" href="{{ site.baseurl }}{{ tag | first }}/">{{ tag | first }}</a>
+  {% endfor %}
+    </div -->
   </body>
 </html>

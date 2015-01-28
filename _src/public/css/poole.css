@@ -36,9 +36,9 @@
  */
 
 * {
-  -webkit-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
-          box-sizing: border-box;
+          box-sizing: border-box; 
 }
 
 html,
@@ -292,9 +292,18 @@ tbody tr:nth-child(odd) th {
   padding-right: 2rem;
   margin-left:  auto;
   margin-right: auto;
+  float: center;
 }
 
 
+.sidebar {
+  max-width: 28rem;
+  padding-left:  2rem;
+  padding-right: 2rem;
+  margin-left:  auto;
+  margin-right: auto;
+  float: right;
+}
 /*
  * Masthead
  *
@@ -344,6 +353,10 @@ tbody tr:nth-child(odd) th {
 .page-title,
 .post-title {
   margin-top: 0;
+}
+
+.page-title {
+    margin-bottom: 3rem;
 }
 
 /* Meta data line below post title */

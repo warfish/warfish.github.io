@@ -1,7 +1,7 @@
 ---
 layout: page
 ---
-<h2>Post archive:</h2>
+<h2 class="page-title">Archive:</h2>
 <p></p>
 <ul class="post-list">
     {% for post in site.posts %}
