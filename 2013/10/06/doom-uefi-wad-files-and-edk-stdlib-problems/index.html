@@ -47,21 +47,21 @@
 
 <p>Заголовок файла описывается структурой wadinfo_t:</p>
 
-<blockquote>struct wadinfo_t
-{
-char id[4]; // "IWAD" or "PWAD"
-int numlumps;
-int tableoffset;
-};</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="kt">wadinfo_t</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">id</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span> <span class="c1">// &quot;IWAD&quot; or &quot;PWAD&quot;</span>
+    <span class="kt">int</span> <span class="n">numlumps</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">tableoffset</span><span class="p">;</span>
+<span class="p">};</span></code></pre></div>
 
 <p>Файла начинается с &quot;IWAD&quot; или &quot;PWAD&quot; идентификатора, tableoffset показывает на позицию в файле где хранится массив структур filelump_t размером numlumps элементов:</p>
 
-<blockquote>struct filelump_t
-{
-char name[8];
-int size;
-int filepos;
-};</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="kt">filelump_t</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">filepos</span><span class="p">;</span>
+<span class="p">};</span></code></pre></div>
 
 <p>filelump_t показывает на область файла filepos, где хранится бинарный блоб с именем name и размером size байт. В doom.wad около 2 тысяч таких лампов. Каждый ламп хранится бинарным блобом с какой-то своей структурой, про которую wad файл ничего не знает.</p>
 
@@ -118,7 +118,7 @@ int filepos;
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T18:46:35+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T19:28:28+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

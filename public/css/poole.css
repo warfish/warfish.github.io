@@ -357,6 +357,10 @@ tbody tr:nth-child(odd) th {
   margin-bottom: 4em;
 }
 
+.post img {
+    max-width: 400px;
+}
+
 /* Blog post or page title */
 .page-title,
 .post-title,

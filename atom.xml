@@ -4,7 +4,7 @@
  <title>My worklog</title>
  <link href="warfish.github.io/atom.xml" rel="self"/>
  <link href="warfish.github.io/"/>
- <updated>2015-01-28T18:46:35+06:00</updated>
+ <updated>2015-01-28T19:28:28+06:00</updated>
  <id>warfish.github.io</id>
  <author>
    <name>Evgeny Yakovlev</name>
@@ -248,9 +248,8 @@ Callback отдельная функция, а не код внутри цикл
 
 &lt;p&gt;Меня всегда интересовало, почему DuetPkg и Nt32Pkg, судя по их DSC файлам, по большей части состоят из бинарных модулей, ничего не знающих про эмуляцию. Наример оба эмулятора использую общую реализацию всего DXE рантайма. Как такое работает?&lt;/p&gt;
 
-&lt;p&gt;Согласно спецификации UEFI инициализация платформы и подготовка ее к загрузке ОС осуществляется в несколько стадий:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif?w=300&quot; alt=&quot;uefifig6[1]&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Согласно спецификации UEFI инициализация платформы и подготовка ее к загрузке ОС осуществляется в несколько стадий:
+&lt;a href=&quot;/public/images/uefifig61.gif&quot;&gt;&lt;img src=&quot;/public/images/uefifig61.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Весь API, который описан в UEFI спецификации становится (полностью) доступен на стадии BDS (Boot Device Selection), когда начинает работать boot manager. Реализация этого API и его инициализация происходит, в общем случае, на стадии DXE - driver execution environment. На стадии DXE работаю несколько основных компонентов, которые нас интересуют в контексте темы поста:&lt;/p&gt;
 
@@ -265,7 +264,7 @@ Callback отдельная функция, а не код внутри цикл
 
 &lt;p&gt;DXE Core реализует EFI&lt;em&gt;SYSTEM&lt;/em&gt;TABLE и все сервисы из EFI&lt;em&gt;BOOT&lt;/em&gt;SERVICES и EFI&lt;em&gt;RUNTIME&lt;/em&gt;SERVICES за счет опоры на EFI architecture protocols:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png?w=300&quot; alt=&quot;dxe+foundation+architectural[1]&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/public/images/dxefoundationarchitectural1.png&quot;&gt;&lt;img src=&quot;/public/images/dxefoundationarchitectural1.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Картинка выше перегружена деталями, но в центре находится реализация DXE, которая зависит от набора архитектурных протоколов таких как EFI&lt;em&gt;CPU&lt;/em&gt;ARCH&lt;em&gt;PROTOCOL, EFI&lt;/em&gt;TIMER&lt;em&gt;ARCH&lt;/em&gt;PROTOCOL и так далее. Эти протоколы описаны в PI спецификации и немногим отличаются от протоколов из UEFI спецификации. Различия есть в драйверах, которые их реализуют: это обычные DXE boot service / DXE runtime service драйвера, однако т.к. опубликованные ими протоколы являются опорой для реализации основных boot и runtime сервисов, то они не могут рассчитывать на их полный набор на некоторых этапах своего выполнения.&lt;/p&gt;
 
@@ -361,7 +360,7 @@ Callback отдельная функция, а не код внутри цикл
    <id>warfish.github.io/2013/12/14/d0b2d0bdd0b5d0b7d0b0d0bfd0bdd0be-d0bed181d0bed0b7d0bdd0b0d0bdd0b8d0b5</id>
    <content type="html">&lt;p&gt;Как так получилось, что год назад PBA был 16-ти битным приложением, которое еле влезало в ~600kb риалмодной памяти, которое нужно было отлаживать дизассемблером дампов и принтфами в ком порт, а теперь это (почти) обычное юзермодное Qt приложение с поддержкой плюсов, STL, boost, которое можно писать и отлаживать под виндой и которое весит 12 метров не считая кучу, которую еще никто даже не считал, но работает в пребуте:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/12/w7x64-2013-12-12-12-37-4611.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/12/w7x64-2013-12-12-12-37-4611.png?w=300&quot; alt=&quot;w7x64-2013-12-12-12-37-461&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/public/images//w7x64-2013-12-12-12-37-4611.png&quot;&gt;&lt;img src=&quot;/public/images/w7x64-2013-12-12-12-37-4611.png&quot; alt=&quot;w7x64-2013-12-12-12-37-461&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Что-то кажется мы хорошо поработали в этом году.&lt;/p&gt;
 </content>
@@ -462,7 +461,7 @@ Callback отдельная функция, а не код внутри цикл
    <link href="warfish.github.io//2013/10/12/doom-uefi-alpha/"/>
    <updated>2013-10-12T21:40:07+07:00</updated>
    <id>warfish.github.io/2013/10/12/doom-uefi-alpha</id>
-   <content type="html">&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-12-at-9-28-07-pm.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-12-at-9-28-07-pm.png?w=300&quot; alt=&quot;Screen Shot 2013-10-12 at 9.28.07 PM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+   <content type="html">&lt;p&gt;&lt;a href=&quot;/public/images/screen-shot-2013-10-12-at-9-28-07-pm.png&quot;&gt;&lt;img src=&quot;/public/images/screen-shot-2013-10-12-at-9-28-07-pm.png&quot; alt=&quot;Screen Shot 2013-10-12 at 9.28.07 PM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Проблемы:&lt;/p&gt;
 
@@ -479,7 +478,7 @@ Callback отдельная функция, а не код внутри цикл
    <link href="warfish.github.io//2013/10/10/doom-uefi-simple-linear-scaling-to-active-resolution/"/>
    <updated>2013-10-10T23:36:58+07:00</updated>
    <id>warfish.github.io/2013/10/10/doom-uefi-simple-linear-scaling-to-active-resolution</id>
-   <content type="html">&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-10-at-11-31-59-pm.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-10-at-11-31-59-pm.png?w=300&quot; alt=&quot;Screen Shot 2013-10-10 at 11.31.59 PM&quot;&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-10-at-11-32-48-pm.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-10-at-11-32-48-pm.png?w=300&quot; alt=&quot;Screen Shot 2013-10-10 at 11.32.48 PM&quot;&gt;&lt;/a&gt;&lt;/a&gt;&lt;/p&gt;
+   <content type="html">&lt;p&gt;&lt;a href=&quot;/public/images/screen-shot-2013-10-10-at-11-31-59-pm.png&quot;&gt;&lt;img src=&quot;/public/images/screen-shot-2013-10-10-at-11-31-59-pm.png&quot; alt=&quot;Screen Shot 2013-10-10 at 11.31.59 PM&quot;&gt;&lt;a href=&quot;/public/images/screen-shot-2013-10-10-at-11-32-48-pm.png&quot;&gt;&lt;img src=&quot;/public/images/screen-shot-2013-10-10-at-11-32-48-pm.png&quot; alt=&quot;Screen Shot 2013-10-10 at 11.32.48 PM&quot;&gt;&lt;/a&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Now, input processing.&lt;/p&gt;
 </content>
@@ -492,7 +491,7 @@ Callback отдельная функция, а не код внутри цикл
    <id>warfish.github.io/2013/10/09/doom-uefi-title-screen</id>
    <content type="html">&lt;p&gt;Yeah!&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-09-at-12-48-46-am.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-09-at-12-48-46-am.png?w=300&quot; alt=&quot;Screen Shot 2013-10-09 at 12.48.46 AM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/public/images//screen-shot-2013-10-09-at-12-48-46-am.png&quot;&gt;&lt;img src=&quot;/public/images/screen-shot-2013-10-09-at-12-48-46-am.png&quot; alt=&quot;Screen Shot 2013-10-09 at 12.48.46 AM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Original game res is 320x200. EFI is running in 800x600. On to scaling and input processing.&lt;/p&gt;
 </content>
@@ -503,7 +502,7 @@ Callback отдельная функция, а не код внутри цикл
    <link href="warfish.github.io//2013/10/07/doom-uefi-d_mainloop/"/>
    <updated>2013-10-07T23:19:43+07:00</updated>
    <id>warfish.github.io/2013/10/07/doom-uefi-d_mainloop</id>
-   <content type="html">&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-07-at-11-15-04-pm.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-07-at-11-15-04-pm.png?w=300&quot; alt=&quot;Screen Shot 2013-10-07 at 11.15.04 PM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+   <content type="html">&lt;p&gt;&lt;a href=&quot;/public/images/screen-shot-2013-10-07-at-11-15-04-pm.png&quot;&gt;&lt;img src=&quot;/public/images/screen-shot-2013-10-07-at-11-15-04-pm.png&quot; alt=&quot;Screen Shot 2013-10-07 at 11.15.04 PM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Все ресурсы загружены, все подсистемы проинициализированы. D_MainLoop начинает сбор пользовательского ввода и рендеринг кадров. Можно начинать реализовывать рисование и ввод :)&lt;/p&gt;
 </content>
@@ -516,15 +515,15 @@ Callback отдельная функция, а не код внутри цикл
    <id>warfish.github.io/2013/10/07/uefi-doom-how-not-to-write-portable-code</id>
    <content type="html">&lt;p&gt;Структура текстурного патча из сурсов дума. Подразумевается что эти структуры хранятся в ресурсном образе as is, код подгружает их читая sizeof(maptexture_t) из файла:&lt;/p&gt;
 
-&lt;blockquote&gt;struct maptexture_t
-{
-char name[8];
-boolean masked;
-short width;
-short height;
-void** obsolete;
-patch_t patches[1];
-};&lt;/blockquote&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;maptexture_t&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;masked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;short&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;short&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;obsolete&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;patch_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;patches&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Естественно собираясь для 64-х битного уефая размер этой структуры едет сразу по нескольким полям.&lt;/p&gt;
 </content>
@@ -550,21 +549,21 @@ patch_t patches[1];
 
 &lt;p&gt;Заголовок файла описывается структурой wadinfo_t:&lt;/p&gt;
 
-&lt;blockquote&gt;struct wadinfo_t
-{
-char id[4]; // &quot;IWAD&quot; or &quot;PWAD&quot;
-int numlumps;
-int tableoffset;
-};&lt;/blockquote&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;wadinfo_t&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;quot;IWAD&amp;quot; or &amp;quot;PWAD&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numlumps&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tableoffset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Файла начинается с &amp;quot;IWAD&amp;quot; или &amp;quot;PWAD&amp;quot; идентификатора, tableoffset показывает на позицию в файле где хранится массив структур filelump_t размером numlumps элементов:&lt;/p&gt;
 
-&lt;blockquote&gt;struct filelump_t
-{
-char name[8];
-int size;
-int filepos;
-};&lt;/blockquote&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;filelump_t&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;filepos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;filelump_t показывает на область файла filepos, где хранится бинарный блоб с именем name и размером size байт. В doom.wad около 2 тысяч таких лампов. Каждый ламп хранится бинарным блобом с какой-то своей структурой, про которую wad файл ничего не знает.&lt;/p&gt;
 
@@ -583,7 +582,7 @@ int filepos;
    <link href="warfish.github.io//2013/10/03/doom-uefi-development-environment/"/>
    <updated>2013-10-03T23:54:09+07:00</updated>
    <id>warfish.github.io/2013/10/03/doom-uefi-development-environment</id>
-   <content type="html">&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-03-at-11-47-33-pm.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/10/screen-shot-2013-10-03-at-11-47-33-pm.png?w=300&quot; alt=&quot;Screen Shot 2013-10-03 at 11.47.33 PM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+   <content type="html">&lt;p&gt;&lt;a href=&quot;/public/images/screen-shot-2013-10-03-at-11-47-33-pm.png&quot;&gt;&lt;img src=&quot;/public/images/screen-shot-2013-10-03-at-11-47-33-pm.png?w=300&quot; alt=&quot;Screen Shot 2013-10-03 at 11.47.33 PM&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Qemu запущен с кастомной прошивкой из EDK - OVMF. У этого эмулятора есть убойная фича (вообще их много) - способность задавать в качестве диска папку на хостовой файловой системе.&lt;/p&gt;
 
@@ -986,15 +985,6 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
    <content type="html">&lt;p&gt;Хорошие новости - винда начала загружаться на реальном железе из эмулируемого UEFI :)&lt;/p&gt;
 
 &lt;p&gt;Плохие новости - она загружается минут 5 против секунд 15 если без меня. Потенциальные причины проблемы исследуются.&lt;/p&gt;
-</content>
- </entry>
- 
- <entry>
-   <title>Mind map - researcher's best friend</title>
-   <link href="warfish.github.io//2013/06/17/mind-map-researchers-best-friend/"/>
-   <updated>2013-06-17T15:43:20+07:00</updated>
-   <id>warfish.github.io/2013/06/17/mind-map-researchers-best-friend</id>
-   <content type="html">&lt;p&gt;&lt;a href=&quot;http://wrfsh.files.wordpress.com/2013/06/duet-console-output.png&quot;&gt;&lt;img src=&quot;http://wrfsh.files.wordpress.com/2013/06/duet-console-output.png?w=300&quot; alt=&quot;Duet console output&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 </content>
  </entry>
  

@@ -401,24 +401,6 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
     
     <article class="post">
       <h1 class="post-title">
-      <a href="/2013/06/17/mind-map-researchers-best-friend/">
-        Mind map - researcher's best friend
-      </a>
-    </h1>
-
-    <time datetime="2013-06-17T15:43:20+07:00" class="post-date">17 Jun 2013</time>
-
-    <p><a href="http://wrfsh.files.wordpress.com/2013/06/duet-console-output.png"><img src="http://wrfsh.files.wordpress.com/2013/06/duet-console-output.png?w=300" alt="Duet console output"></a></p>
-
-    
-    <span class="tags">
-      
-    </span>
-
-    </article>
-    
-    <article class="post">
-      <h1 class="post-title">
       <a href="/2013/06/16/uefi-emulation-biosthunk-and-protected-mode-versus-real-mode-interrupts/">
         [UEFI Emulation] BiosThunk and protected mode versus real mode interrupts
       </a>
@@ -454,6 +436,32 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
     <span class="tags">
       
       <a href="/preboot/">preboot</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+    </span>
+
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
+      <a href="/2013/06/15/uefi-emulation-dxecore/">
+        [UEFI Emulation] DxeCore
+      </a>
+    </h1>
+
+    <time datetime="2013-06-15T21:51:39+07:00" class="post-date">15 Jun 2013</time>
+
+    <p>DxeCore - Ядро UEFI рантайма, стартует сразу после PI (Platform Initialization) стадии. В терминах DuetPkg, где Pi стадия заключается в инициализации пейджинга и idt, сразу после DuetPkg/DxeIpl.</p>
+
+<p>В DxeCore сосредоточено очень много интересного, в том числе аллокаторы страниц и пулов, учет хендлов, публикация протоколов и т.д. Его роль - реализация базового функционала, необходимого в рантайме UEFI. Все остальное по сути врапперы и клиенты этой основы.</p>
+
+<p>Код можно посмотреть здесь: <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/MdeModulePkg/Core/Dxe">Dxe</a></p>
+
+<p>Удивляет отстутсвие тестов, но может я чего-то не вижу / не знаю.</p>
+
+    
+    <span class="tags">
       
       <a href="/UEFI/">UEFI</a>
       
@@ -508,7 +516,7 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T18:46:35+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T19:28:28+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

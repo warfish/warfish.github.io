@@ -45,15 +45,15 @@
   <time datetime="2013-10-07T22:43:55+07:00" class="post-date">07 Oct 2013</time>
   <p>Структура текстурного патча из сурсов дума. Подразумевается что эти структуры хранятся в ресурсном образе as is, код подгружает их читая sizeof(maptexture_t) из файла:</p>
 
-<blockquote>struct maptexture_t
-{
-char name[8];
-boolean masked;
-short width;
-short height;
-void** obsolete;
-patch_t patches[1];
-};</blockquote>
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="kt">maptexture_t</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+    <span class="kt">bool</span> <span class="n">masked</span><span class="p">;</span>
+    <span class="kt">short</span> <span class="n">width</span><span class="p">;</span>
+    <span class="kt">short</span> <span class="n">height</span><span class="p">;</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">obsolete</span><span class="p">;</span>
+    <span class="kt">patch_t</span> <span class="n">patches</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="p">};</span></code></pre></div>
 
 <p>Естественно собираясь для 64-х битного уефая размер этой структуры едет сразу по нескольким полям.</p>
 
@@ -102,7 +102,7 @@ patch_t patches[1];
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T18:46:35+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T19:28:28+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

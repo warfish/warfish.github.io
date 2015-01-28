@@ -47,9 +47,8 @@
 
 <p>Меня всегда интересовало, почему DuetPkg и Nt32Pkg, судя по их DSC файлам, по большей части состоят из бинарных модулей, ничего не знающих про эмуляцию. Наример оба эмулятора использую общую реализацию всего DXE рантайма. Как такое работает?</p>
 
-<p>Согласно спецификации UEFI инициализация платформы и подготовка ее к загрузке ОС осуществляется в несколько стадий:</p>
-
-<p><a href="http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif"><img src="http://wrfsh.files.wordpress.com/2014/01/uefifig61.gif?w=300" alt="uefifig6[1]"></a></p>
+<p>Согласно спецификации UEFI инициализация платформы и подготовка ее к загрузке ОС осуществляется в несколько стадий:
+<a href="/public/images/uefifig61.gif"><img src="/public/images/uefifig61.gif"></img></a></p>
 
 <p>Весь API, который описан в UEFI спецификации становится (полностью) доступен на стадии BDS (Boot Device Selection), когда начинает работать boot manager. Реализация этого API и его инициализация происходит, в общем случае, на стадии DXE - driver execution environment. На стадии DXE работаю несколько основных компонентов, которые нас интересуют в контексте темы поста:</p>
 
@@ -64,7 +63,7 @@
 
 <p>DXE Core реализует EFI<em>SYSTEM</em>TABLE и все сервисы из EFI<em>BOOT</em>SERVICES и EFI<em>RUNTIME</em>SERVICES за счет опоры на EFI architecture protocols:</p>
 
-<p><a href="http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png"><img src="http://wrfsh.files.wordpress.com/2014/01/dxefoundationarchitectural1.png?w=300" alt="dxe+foundation+architectural[1]"></a></p>
+<p><a href="/public/images/dxefoundationarchitectural1.png"><img src="/public/images/dxefoundationarchitectural1.png"></img></a></p>
 
 <p>Картинка выше перегружена деталями, но в центре находится реализация DXE, которая зависит от набора архитектурных протоколов таких как EFI<em>CPU</em>ARCH<em>PROTOCOL, EFI</em>TIMER<em>ARCH</em>PROTOCOL и так далее. Эти протоколы описаны в PI спецификации и немногим отличаются от протоколов из UEFI спецификации. Различия есть в драйверах, которые их реализуют: это обычные DXE boot service / DXE runtime service драйвера, однако т.к. опубликованные ими протоколы являются опорой для реализации основных boot и runtime сервисов, то они не могут рассчитывать на их полный набор на некоторых этапах своего выполнения.</p>
 
@@ -138,7 +137,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-28T18:46:35+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-28T19:28:28+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 
