@@ -7,6 +7,9 @@ description: 'My worklog'
 url: warfish.github.io
 baseurl: /
 
+tag_page_layout: tag_page
+tag_page_dir: .
+
 author:
     name: 'Evgeny Yakovlev'
     url:  warfish.github.io
