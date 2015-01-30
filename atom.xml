@@ -4,7 +4,7 @@
  <title>My worklog</title>
  <link href="warfish.github.io/atom.xml" rel="self"/>
  <link href="warfish.github.io/"/>
- <updated>2015-01-30T13:39:34+06:00</updated>
+ <updated>2015-01-30T14:14:12+06:00</updated>
  <id>warfish.github.io</id>
  <author>
    <name>Evgeny Yakovlev</name>
@@ -28,6 +28,20 @@
 &lt;span class=&quot;l-Scalar-Plain&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;make run&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Результаты билдов можно посмотреть тут &lt;a href=&quot;https://travis-ci.org/warfish/ci-test&quot;&gt;https://travis-ci.org/warfish/ci-test&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;UPD: &lt;/p&gt;
+
+&lt;p&gt;Я решил сделать что-то поинтереснее. У меня есть репозиторий &lt;a href=&quot;https://github.com/warfish/chip8&quot;&gt;chip8&lt;/a&gt; - эмулятор chip8 с автотестами на CUnit. Чтобы собрать его нужно вытянуть зависимость от CUnit сначала. Это получилось сделать тривиально в yml конфиге:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;l-Scalar-Plain&quot;&gt;language&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;c&lt;/span&gt;
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;compiler&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;gcc&lt;/span&gt;
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;before_script&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;sudo apt-get install libcunit1&lt;/span&gt;
+&lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;sudo apt-get install libcunit1-dev&lt;/span&gt;
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;make chip8-test&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;И вот лог первого билда с автотестами: &lt;a href=&quot;https://travis-ci.org/warfish/chip8/builds/48865917&quot;&gt;https://travis-ci.org/warfish/chip8/builds/48865917&lt;/a&gt;&lt;/p&gt;
 </content>
  </entry>
  

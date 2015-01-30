@@ -19,3 +19,19 @@ script: make run
 {% endhighlight %}
 
 Результаты билдов можно посмотреть тут [https://travis-ci.org/warfish/ci-test](https://travis-ci.org/warfish/ci-test).
+
+UPD: 
+
+Я решил сделать что-то поинтереснее. У меня есть репозиторий [chip8](https://github.com/warfish/chip8) - эмулятор chip8 с автотестами на CUnit. Чтобы собрать его нужно вытянуть зависимость от CUnit сначала. Это получилось сделать тривиально в yml конфиге:
+{% highlight YAML %}
+language: c
+compiler:
+- gcc
+before_script:
+- sudo apt-get install libcunit1
+- sudo apt-get install libcunit1-dev
+script: make chip8-test
+{% endhighlight %}
+
+И вот лог первого билда с автотестами: [https://travis-ci.org/warfish/chip8/builds/48865917](https://travis-ci.org/warfish/chip8/builds/48865917)
+

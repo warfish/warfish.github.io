@@ -55,6 +55,20 @@
 
 <p>Результаты билдов можно посмотреть тут <a href="https://travis-ci.org/warfish/ci-test">https://travis-ci.org/warfish/ci-test</a>.</p>
 
+<p>UPD: </p>
+
+<p>Я решил сделать что-то поинтереснее. У меня есть репозиторий <a href="https://github.com/warfish/chip8">chip8</a> - эмулятор chip8 с автотестами на CUnit. Чтобы собрать его нужно вытянуть зависимость от CUnit сначала. Это получилось сделать тривиально в yml конфиге:</p>
+
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">c</span>
+<span class="l-Scalar-Plain">compiler</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">gcc</span>
+<span class="l-Scalar-Plain">before_script</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo apt-get install libcunit1</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo apt-get install libcunit1-dev</span>
+<span class="l-Scalar-Plain">script</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">make chip8-test</span></code></pre></div>
+
+<p>И вот лог первого билда с автотестами: <a href="https://travis-ci.org/warfish/chip8/builds/48865917">https://travis-ci.org/warfish/chip8/builds/48865917</a></p>
+
   <span class="tags">
       
   </span>
@@ -115,7 +129,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-30T13:39:34+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-30T14:14:12+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 
