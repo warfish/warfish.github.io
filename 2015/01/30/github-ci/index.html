@@ -10,7 +10,7 @@
 
   <title>
     
-      CMOS as a persistent secret storage &middot; My worklog
+      GitHub + Continuous Integration &middot; My worklog
     
   </title>
 
@@ -41,21 +41,21 @@
 
       <main>
         <article class="post">
-  <h1 class="post-title">CMOS as a persistent secret storage</h1>
-  <time datetime="2013-06-12T21:54:30+07:00" class="post-date">12 Jun 2013</time>
-  <p>Чтобы PBA работало с перезагрузкой, нужно сохранить где-то секрет. Секрет можно разбить на две части - данные и ключ шифрования. В таком случае данные можно положить на диск, а вот куда деть ключ, так чтобы он пережил перезагрузку и его было легко стереть.</p>
+  <h1 class="post-title">GitHub + Continuous Integration</h1>
+  <time datetime="2015-01-30T00:00:00+06:00" class="post-date">30 Jan 2015</time>
+  <p>Недавно я стал замечать на гитхабовых репозиториях светофоры со статусами билдов. При выяснении что это такое оказалось что это внешний, интегрированный с гитхабом, сервис continuous integration. Как правило это <a href="http://travis-ci.org">travis-ci</a>. Сервис позволяет автоматически запускать билды и тесты для заданных конфигураций языков и тулчейнов и генерить отчеты о статусе таких билдов. Настроить все очень просто, вот <a href="http://docs.travis-ci.com/user/getting-started/">три шага к успеху</a>.</p>
 
-<p>На UEFI есть <a href="http://en.wikipedia.org/wiki/Non-volatile_random-access_memory">NVRAM</a>, а вот на BIOS есть <a href="http://en.wikipedia.org/wiki/CMOS">CMOS</a>. Он гораздо меньше, 512 байт, но мне нужно всего 16. Можно поэкспериментировать с хранением секрета в этой памяти в случае, если без перезагрузки жить не получится. Основная проблема с таким подходом пожалуй в том, что формат данных, хранимых в CMOS, плохо стандартизирован. Не понятно где свободное место, а где нужные биосу данные.</p>
+<p>Я сделал себе тестовый репозиторий: <a href="https://github.com/warfish/ci-test">ci-test</a>. Для подцепления репы к травису нужно написать YAML конфигурацию в .travis.yml:</p>
 
-<p>Код чтения и записи CMOS в Linux: <a href="http://lxr.linux.no/linux+v3.9.5/drivers/char/nvram.c">http://lxr.linux.no/linux+v3.9.5/drivers/char/nvram.c</a></p>
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">c</span>
+<span class="l-Scalar-Plain">compiler</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">gcc</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">clang</span>
+<span class="l-Scalar-Plain">script</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">make run</span></code></pre></div>
 
-<p>CMOS memory map: <a href="http://www.bioscentral.com/misc/cmosmap.htm#">http://www.bioscentral.com/misc/cmosmap.htm#</a></p>
-
-<p>OSDev article: <a href="http://wiki.osdev.org/CMOS">http://wiki.osdev.org/CMOS</a></p>
+<p>Результаты билдов можно посмотреть тут <a href="https://travis-ci.org/warfish/ci-test">https://travis-ci.org/warfish/ci-test</a>.</p>
 
   <span class="tags">
-      
-      <a href="/BIOS/">BIOS</a>
       
   </span>
 </article>
@@ -83,15 +83,6 @@
     
       <li>
         <h3>
-          <a href="//2015/01/30/github-ci/">
-            GitHub + Continuous Integration
-            <small><time datetime="2015-01-30T00:00:00+06:00">30 Jan 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
           <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
             Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
             <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
@@ -104,6 +95,15 @@
           <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
             Виртуализация
             <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/09/12/smm-d0b1d0b0d0b3d0b8-d0b1d0b8d0bed181d0b0/">
+            SMM баги биоса
+            <small><time datetime="2014-09-12T10:59:05+07:00">12 Sep 2014</time></small>
           </a>
         </h3>
       </li>

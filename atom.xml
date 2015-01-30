@@ -4,13 +4,32 @@
  <title>My worklog</title>
  <link href="warfish.github.io/atom.xml" rel="self"/>
  <link href="warfish.github.io/"/>
- <updated>2015-01-28T22:56:05+06:00</updated>
+ <updated>2015-01-30T13:39:34+06:00</updated>
  <id>warfish.github.io</id>
  <author>
    <name>Evgeny Yakovlev</name>
    <email></email>
  </author>
 
+ 
+ <entry>
+   <title>GitHub + Continuous Integration</title>
+   <link href="warfish.github.io//2015/01/30/github-ci/"/>
+   <updated>2015-01-30T00:00:00+06:00</updated>
+   <id>warfish.github.io/2015/01/30/github-ci</id>
+   <content type="html">&lt;p&gt;Недавно я стал замечать на гитхабовых репозиториях светофоры со статусами билдов. При выяснении что это такое оказалось что это внешний, интегрированный с гитхабом, сервис continuous integration. Как правило это &lt;a href=&quot;http://travis-ci.org&quot;&gt;travis-ci&lt;/a&gt;. Сервис позволяет автоматически запускать билды и тесты для заданных конфигураций языков и тулчейнов и генерить отчеты о статусе таких билдов. Настроить все очень просто, вот &lt;a href=&quot;http://docs.travis-ci.com/user/getting-started/&quot;&gt;три шага к успеху&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Я сделал себе тестовый репозиторий: &lt;a href=&quot;https://github.com/warfish/ci-test&quot;&gt;ci-test&lt;/a&gt;. Для подцепления репы к травису нужно написать YAML конфигурацию в .travis.yml:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;l-Scalar-Plain&quot;&gt;language&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;c&lt;/span&gt;
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;compiler&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;gcc&lt;/span&gt;
+&lt;span class=&quot;p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;clang&lt;/span&gt;
+&lt;span class=&quot;l-Scalar-Plain&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;p-Indicator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l-Scalar-Plain&quot;&gt;make run&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Результаты билдов можно посмотреть тут &lt;a href=&quot;https://travis-ci.org/warfish/ci-test&quot;&gt;https://travis-ci.org/warfish/ci-test&lt;/a&gt;.&lt;/p&gt;
+</content>
+ </entry>
  
  <entry>
    <title>Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора</title>
