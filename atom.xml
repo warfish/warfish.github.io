@@ -4,7 +4,7 @@
  <title>My worklog</title>
  <link href="warfish.github.io/atom.xml" rel="self"/>
  <link href="warfish.github.io/"/>
- <updated>2015-01-31T16:36:23+06:00</updated>
+ <updated>2015-01-31T16:39:32+06:00</updated>
  <id>warfish.github.io</id>
  <author>
    <name>Evgeny Yakovlev</name>
@@ -188,7 +188,8 @@ Mean: 40
 
 &lt;/ul&gt;
 
-&lt;p&gt;Результаты говорят сами за себя и в общем-то ожидаемые.&lt;/p&gt;
+&lt;p&gt;Результаты говорят сами за себя и в общем-то ожидаемые.&lt;br /&gt;
+Тесты гонялись на Intel(R) Core(TM) i3-3240 CPU @ 3.40GHz&lt;/p&gt;
 </content>
  </entry>
  
