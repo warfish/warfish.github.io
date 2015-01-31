@@ -4,13 +4,193 @@
  <title>My worklog</title>
  <link href="warfish.github.io/atom.xml" rel="self"/>
  <link href="warfish.github.io/"/>
- <updated>2015-01-30T14:19:28+06:00</updated>
+ <updated>2015-01-31T16:36:23+06:00</updated>
  <id>warfish.github.io</id>
  <author>
    <name>Evgeny Yakovlev</name>
    <email></email>
  </author>
 
+ 
+ <entry>
+   <title>CPU out-of-order performance</title>
+   <link href="warfish.github.io//2015/01/31/CPU-out-of-order-optimization/"/>
+   <updated>2015-01-31T00:00:00+06:00</updated>
+   <id>warfish.github.io/2015/01/31/CPU-out-of-order-optimization</id>
+   <content type="html">&lt;p&gt;Начиная с &lt;a href=&quot;http://en.wikipedia.org/wiki/P6_%28microarchitecture%29&quot;&gt;P6&lt;/a&gt; интел реализует out-of-order спекулятивную суперскалярную микроархитектуру. Это означает, в общих чертах, что в ядре работают несколько конвееров и оно умеет наружать их микрокодом инструкций не обязательно в том порядке, в котором они идут в машинном коде если результат вычислений в пределах instruction window не меняется. &lt;/p&gt;
+
+&lt;p&gt;На практике это означает, что если внутри ограниченной последовательности инструкций последующая инструкция не зависит от результата вычислений предыдущей, то ее можно начать выполнять уже сейчас, оптимально на другом конвеере:&lt;/p&gt;
+
+&lt;p&gt;
+&lt;a href=&quot;http://www.renesas.com/media/products/mpumcu/rx/getting_started/feature/rxfamily_feature01.gif&quot;&gt;&lt;img src=&quot;http://www.renesas.com/media/products/mpumcu/rx/getting_started/feature/rxfamily_feature01.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Это известная фича, но я решил сделать небольшой бенчмарк. Для этого я сделал 64-х битный уефайный бинарник, который запускается на одном ядре на голом железе и выполняет три теста замеряя производительность с помощью сериализующей RDTSCP:
+&lt;ul&gt;
+&lt;li&gt;Первый тест считает оверхед, наложенный работой с RDTSCP - контрольная группа.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span class=&quot;nl&quot;&gt;test0:&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;; Save-disable interrupts&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;pushf&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;cli&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Save starting tsc in rbx (wasting some overhead cycles)&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;rdtscp&lt;/span&gt;              
+    &lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;     
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;    
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rbx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;    
+    
+    &lt;span class=&quot;c1&quot;&gt;; Collect end tsc&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;rdtscp&lt;/span&gt;              
+    &lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;     
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;sub&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rbx&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Restore interrupts and return&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;popf&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;ret&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;/li&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;li&gt;
+Второй тест пытается сложить шесть 64-х битных чисел со стека и сохранить результат по указателю на стеке. При этом в коде сложения каждая следующая инструкция зависит от результатов предыдущей&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span class=&quot;nl&quot;&gt;test1:&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;push&lt;/span&gt;    &lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rsp&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Save-disable interrupts&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;pushf&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;cli&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Save starting tsc in rbx (wasting some overhead cycles)&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;rdtscp&lt;/span&gt;              
+    &lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;     
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;    
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rbx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;    
+    
+    &lt;span class=&quot;c1&quot;&gt;; Add numbers&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;            
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;            
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;            
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x28&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;            
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;            
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x38&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;            
+    
+    &lt;span class=&quot;c1&quot;&gt;; Store&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Collect end tsc&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;rdtscp&lt;/span&gt;              
+    &lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;    
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;sub&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rbx&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Restore interrupts and return&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;popf&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;pop&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;ret&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;/li&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;li&gt;
+Третий тест делает тоже самое что и второй, но в нем я пытался написать максимально дружелюбный к out-of-order код. При этом количество инструкций выполняющих сложение одинаково в обоих тестах&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span class=&quot;nl&quot;&gt;test2:&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;push&lt;/span&gt;    &lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rsp&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Save-disable interrupts&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;pushf&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;cli&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Save starting tsc in rbx (wasting some overhead cycles)&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;rdtscp&lt;/span&gt;              
+    &lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;     
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;    
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rbx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;    
+    
+    &lt;span class=&quot;c1&quot;&gt;; Add numbers&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rcx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;r8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;r9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x28&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;r10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;r11&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x38&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rcx&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;r8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;r9&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nv&quot;&gt;r10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;r11&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;r8&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;r10&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt; 
+
+    &lt;span class=&quot;c1&quot;&gt;; Store&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Collect end tsc&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;rdtscp&lt;/span&gt;              
+    &lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;     
+    &lt;span class=&quot;nf&quot;&gt;add&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;mov&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rdx&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;sub&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rbx&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;; Restore interrupts and return&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;popf&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;pop&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;rbp&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;ret&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;/li&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;Каждый тест, как я уж сказал, я прогнал 4 раза на голом железе с выключенными прерываниями. Еще я заренее разогревал кеши инструкций верхушки стека предварительным проходом, который не фиксируется:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Первый тест, оверхед замеров:
+&lt;pre&gt;
+0: 36
+1: 36
+2: 36
+3: 36
+Mean: 36
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt;Второй тест, пессимизация под out-of-order:
+&lt;pre&gt;
+0: 154
+1: 156
+2: 152
+3: 144
+Mean: 151.5
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt;Третий тест, оптимизация под out-of-order:
+&lt;pre&gt;
+0: 40
+1: 40
+2: 40
+3: 40
+Mean: 40
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;/ul&gt;
+
+&lt;p&gt;Результаты говорят сами за себя и в общем-то ожидаемые.&lt;/p&gt;
+</content>
+ </entry>
  
  <entry>
    <title>GitHub + Continuous Integration</title>

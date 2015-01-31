@@ -47,6 +47,28 @@
     
     <article class="post">
       <h1 class="post-title">
+      <a href="/2013/10/10/doom-uefi-simple-linear-scaling-to-active-resolution/">
+        [DOOM-UEFI] Simple linear scaling to active resolution
+      </a>
+    </h1>
+
+    <time datetime="2013-10-10T23:36:58+07:00" class="post-date">10 Oct 2013</time>
+
+    <p><a href="/public/images/screen-shot-2013-10-10-at-11-31-59-pm.png"><img src="/public/images/screen-shot-2013-10-10-at-11-31-59-pm.png" alt="Screen Shot 2013-10-10 at 11.31.59 PM"><a href="/public/images/screen-shot-2013-10-10-at-11-32-48-pm.png"><img src="/public/images/screen-shot-2013-10-10-at-11-32-48-pm.png" alt="Screen Shot 2013-10-10 at 11.32.48 PM"></a></a></p>
+
+<p>Now, input processing.</p>
+
+    
+    <span class="tags">
+      
+      <a href="/doom-uefi/">doom-uefi</a>
+      
+    </span>
+
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2013/10/09/doom-uefi-title-screen/">
         [DOOM-UEFI] Title screen
       </a>
@@ -330,66 +352,6 @@
 
     </article>
     
-    <article class="post">
-      <h1 class="post-title">
-      <a href="/2013/07/20/uefi-quick-ui-toolkit-overview/">
-        [UEFI] Quick UI toolkit overview
-      </a>
-    </h1>
-
-    <time datetime="2013-07-20T15:31:19+07:00" class="post-date">20 Jul 2013</time>
-
-    <p>EFI (нативно и эмулируемо) дает интерфейс <a href="http://wiki.phoenix.com/wiki/index.php/EFI_GRAPHICS_OUTPUT_PROTOCOL">GOP</a>, который поддерживает BitBlt и предлагает реализовывать GUI поверх него.  Предполагается, что BitBlt это все что нужно для этого. Я поискал в интернетах открытые и проприетарные GUI тулкиты для EFI, для embedded и для linux framebuffer, потому что последний достаточно близко эмулируется поверх GOP. Вот что удалось откапать.</p>
-
-<p><strong>C/PEG, PEG+, PEG Pro</strong></p>
-
-<p><a href="http://www.swellsoftware.com/products/cpeg.php">http://www.swellsoftware.com/products/cpeg.php</a></p>
-
-<p>Проприетарное решение от SwellSoftware, ссылка ведет на C/PEG, рядом лежат PEG+ и PEG Pro, которые стоят дороже, но дают больше функционала. В пдфке стоит поддержка x86 VBE и linux framebuffer. К сожалению evaluation kit они хотят слать физической почтой и требуют указать американский штат, поэтому посмотреть в жизни не удается. Тем не менее решение выглядит интересно, хотя цена на лицензирование только по прямому запросу в отдел продаж.</p>
-
-<p><strong>FLTK</strong></p>
-
-<p><a href="http://www.fltk.org/index.php">http://www.fltk.org/index.php</a></p>
-
-<p>Fast Light Tool Kit. Достаточно взрослый и стабильный проект, быстрый, легковесный, умеет рендерить шрифты и содержит достаточно неплохой набор виджетов. Лицензия GPL v2 с небольшими дополнениями, а именно <a href="http://www.fltk.org/COPYING.php">http://www.fltk.org/COPYING.php</a>:</p>
-
-<blockquote>Static linking of applications and widgets to the FLTK library does not constitute a derivative work and does not require the author to provide source code for the application or widget, use the shared FLTK libraries, or link their applications or widgets against a user-supplied version of FLTK.
-
-If you link the application or widget to a modified version of FLTK, then the changes to FLTK must be provided under the terms of the LGPL in sections 1, 2, and 4.</blockquote>
-
-<p>Т.е. позволяет линковаться статически и не требует раскрытия кода клиентского приложения.</p>
-
-<p>Проблема с FLTK в том, что он опирается на Carbon/GDI/X11, что существенно усложняет портирование.</p>
-
-<p><strong>Microwindows</strong></p>
-
-<p><a href="http://www.microwindows.org/">http://www.microwindows.org/</a></p>
-
-<p>Еще один распространенный в embedded среде тулкит. Пристально пока не смотрел, но радует вот это утверждение с главной страницы:</p>
-
-<blockquote>All drivers are endian-neutral with only Read/DrawPixel, DrawV/Hline and Blit entry points.</blockquote>
-
-<p>Т.е. реализация опирается на архитектуру графического драйвера, которому нужны DrawPixel, Draw[V/H]Line и Blit. Опять же, пристально не вглядывался, но такой вариант достаточно портируемый. Лицензирован под <a href="http://www.mozilla.org/MPL/">MPL</a>. Архитектуру можно почитать <a href="http://www.microwindows.org/microwindows_architecture.html">здесь</a>, советую обратить внимание на раздел Screen Driver</p>
-
-<p><strong>Embedded Qt</strong></p>
-
-<p><a href="http://qt-project.org/doc/qt-4.8/qt-embedded-linux.html">http://qt-project.org/doc/qt-4.8/qt-embedded-linux.html</a></p>
-
-<p>Встраиваемая версия Qt работающая поверх linux framebuffer. Очень интересный вариант. Что такое Qt думаю пояснять не стоит, а вот про то, что такое фреймбуфер можно почитать <a href="http://tldp.org/HOWTO/Framebuffer-HOWTO/">здесь</a>.</p>
-
-<p><strong>Итого</strong></p>
-
-<p>Есть еще несколько слишком абстрактных вариантов, типа Tcl\Tk порт, но наиболее интересными мне кажутся варианты с Microwindows и Embedded Qt.</p>
-
-    
-    <span class="tags">
-      
-      <a href="/UEFI/">UEFI</a>
-      
-    </span>
-
-    </article>
-    
     </div>
 
     <div class="pagination">
@@ -408,26 +370,29 @@ If you link the application or widget to a modified version of FLTK, then the ch
   <div class="sidebar">
     <ul class="post-list">
       
-      <!-- a style="font-size: 198%" href="/BIOS/">BIOS</a -->
+      <!-- a style="font-size: 182%" href="/BIOS/">BIOS</a -->
       <li><a href="/BIOS/">BIOS</a></li>
       
-      <!-- a style="font-size: 112%" href="/device state/">device state</a -->
+      <!-- a style="font-size: 107%" href="/device state/">device state</a -->
       <li><a href="/device state/">device state</a></li>
       
-      <!-- a style="font-size: 270%" href="/preboot/">preboot</a -->
+      <!-- a style="font-size: 245%" href="/preboot/">preboot</a -->
       <li><a href="/preboot/">preboot</a></li>
       
-      <!-- a style="font-size: 327%" href="/UEFI/">UEFI</a -->
+      <!-- a style="font-size: 295%" href="/UEFI/">UEFI</a -->
       <li><a href="/UEFI/">UEFI</a></li>
       
-      <!-- a style="font-size: 112%" href="/crypto/">crypto</a -->
+      <!-- a style="font-size: 107%" href="/crypto/">crypto</a -->
       <li><a href="/crypto/">crypto</a></li>
       
-      <!-- a style="font-size: 212%" href="/doom-uefi/">doom-uefi</a -->
+      <!-- a style="font-size: 195%" href="/doom-uefi/">doom-uefi</a -->
       <li><a href="/doom-uefi/">doom-uefi</a></li>
       
-      <!-- a style="font-size: 84%" href="/github/">github</a -->
+      <!-- a style="font-size: 82%" href="/github/">github</a -->
       <li><a href="/github/">github</a></li>
+      
+      <!-- a style="font-size: 82%" href="/hardware/">hardware</a -->
+      <li><a href="/hardware/">hardware</a></li>
       
     </ul>
   </div>
@@ -440,7 +405,7 @@ If you link the application or widget to a modified version of FLTK, then the ch
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-30T14:19:28+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-31T16:36:23+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

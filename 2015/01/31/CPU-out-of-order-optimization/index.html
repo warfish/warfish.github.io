@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      CPU out-of-order performance &middot; My worklog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.png">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="My worklog" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h2 class="masthead-title">
+          <a href="/" title="Home">My worklog</a>
+          <small><a href="https://github.com/warfish">GitHub</a></small>
+          <small><a href="/archive/">Archive</a></small>
+          <small><a href="/tags/">Tags</a></small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">CPU out-of-order performance</h1>
+  <time datetime="2015-01-31T00:00:00+06:00" class="post-date">31 Jan 2015</time>
+  <p>Начиная с <a href="http://en.wikipedia.org/wiki/P6_%28microarchitecture%29">P6</a> интел реализует out-of-order спекулятивную суперскалярную микроархитектуру. Это означает, в общих чертах, что в ядре работают несколько конвееров и оно умеет наружать их микрокодом инструкций не обязательно в том порядке, в котором они идут в машинном коде если результат вычислений в пределах instruction window не меняется. </p>
+
+<p>На практике это означает, что если внутри ограниченной последовательности инструкций последующая инструкция не зависит от результата вычислений предыдущей, то ее можно начать выполнять уже сейчас, оптимально на другом конвеере:</p>
+
+<p>
+<a href="http://www.renesas.com/media/products/mpumcu/rx/getting_started/feature/rxfamily_feature01.gif"><img src="http://www.renesas.com/media/products/mpumcu/rx/getting_started/feature/rxfamily_feature01.gif"></img></a>
+</p>
+
+<p>Это известная фича, но я решил сделать небольшой бенчмарк. Для этого я сделал 64-х битный уефайный бинарник, который запускается на одном ядре на голом железе и выполняет три теста замеряя производительность с помощью сериализующей RDTSCP:
+<ul>
+<li>Первый тест считает оверхед, наложенный работой с RDTSCP - контрольная группа.</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="nl">test0:</span>
+    <span class="c1">; Save-disable interrupts</span>
+    <span class="nf">pushf</span>
+    <span class="nf">cli</span>
+
+    <span class="c1">; Save starting tsc in rbx (wasting some overhead cycles)</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>    
+    <span class="nf">mov</span>     <span class="nb">rbx</span><span class="p">,</span> <span class="nb">rdx</span>    
+    
+    <span class="c1">; Collect end tsc</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>
+    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rbx</span>
+
+    <span class="c1">; Restore interrupts and return</span>
+    <span class="nf">popf</span>
+    <span class="nf">ret</span></code></pre></div>
+
+<p></li></p>
+
+<p><li>
+Второй тест пытается сложить шесть 64-х битных чисел со стека и сохранить результат по указателю на стеке. При этом в коде сложения каждая следующая инструкция зависит от результатов предыдущей</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="nl">test1:</span>
+    <span class="nf">push</span>    <span class="nb">rbp</span>
+    <span class="nf">mov</span>     <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+    <span class="c1">; Save-disable interrupts</span>
+    <span class="nf">pushf</span>
+    <span class="nf">cli</span>
+
+    <span class="c1">; Save starting tsc in rbx (wasting some overhead cycles)</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>    
+    <span class="nf">mov</span>     <span class="nb">rbx</span><span class="p">,</span> <span class="nb">rdx</span>    
+    
+    <span class="c1">; Add numbers</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x18</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x20</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x28</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x30</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x38</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    
+    <span class="c1">; Store</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="p">[</span><span class="nb">rdx</span><span class="p">],</span> <span class="nb">rax</span>
+
+    <span class="c1">; Collect end tsc</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>    
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>
+    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rbx</span>
+
+    <span class="c1">; Restore interrupts and return</span>
+    <span class="nf">popf</span>
+    <span class="nf">pop</span>     <span class="nb">rbp</span>
+    <span class="nf">ret</span></code></pre></div>
+
+<p></li></p>
+
+<p><li>
+Третий тест делает тоже самое что и второй, но в нем я пытался написать максимально дружелюбный к out-of-order код. При этом количество инструкций выполняющих сложение одинаково в обоих тестах</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="nl">test2:</span>
+    <span class="nf">push</span>    <span class="nb">rbp</span>
+    <span class="nf">mov</span>     <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+    <span class="c1">; Save-disable interrupts</span>
+    <span class="nf">pushf</span>
+    <span class="nf">cli</span>
+
+    <span class="c1">; Save starting tsc in rbx (wasting some overhead cycles)</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>    
+    <span class="nf">mov</span>     <span class="nb">rbx</span><span class="p">,</span> <span class="nb">rdx</span>    
+    
+    <span class="c1">; Add numbers</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nb">rcx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x18</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r8</span><span class="p">,</span>  <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x20</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r9</span><span class="p">,</span>  <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x28</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r10</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x30</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r11</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x38</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rcx</span>
+    <span class="nf">add</span>     <span class="nv">r8</span><span class="p">,</span> <span class="nv">r9</span>
+    <span class="nf">add</span>     <span class="nv">r10</span><span class="p">,</span> <span class="nv">r11</span>
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nv">r8</span>
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nv">r10</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span> 
+
+    <span class="c1">; Store</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="p">[</span><span class="nb">rdx</span><span class="p">],</span> <span class="nb">rax</span>
+
+    <span class="c1">; Collect end tsc</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>
+    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rbx</span>
+
+    <span class="c1">; Restore interrupts and return</span>
+    <span class="nf">popf</span>
+    <span class="nf">pop</span>     <span class="nb">rbp</span>
+    <span class="nf">ret</span></code></pre></div>
+
+<p></li></p>
+
+<p></ul></p>
+
+<p>Каждый тест, как я уж сказал, я прогнал 4 раза на голом железе с выключенными прерываниями. Еще я заренее разогревал кеши инструкций верхушки стека предварительным проходом, который не фиксируется:</p>
+
+<ul>
+<li>Первый тест, оверхед замеров:
+<pre>
+0: 36
+1: 36
+2: 36
+3: 36
+Mean: 36
+</pre>
+</li>
+
+<li>Второй тест, пессимизация под out-of-order:
+<pre>
+0: 154
+1: 156
+2: 152
+3: 144
+Mean: 151.5
+</pre>
+</li>
+
+<li>Третий тест, оптимизация под out-of-order:
+<pre>
+0: 40
+1: 40
+2: 40
+3: 40
+Mean: 40
+</pre>
+</li>
+
+</ul>
+
+<p>Результаты говорят сами за себя и в общем-то ожидаемые.</p>
+
+  <span class="tags">
+      
+      <a href="/hardware/">hardware</a>
+      
+  </span>
+</article>
+
+
+ <div id="disqus_thread"></div>
+     <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+             var disqus_shortname = 'warfish'; // required: replace example with your forum shortname
+
+                     /* * * DON'T EDIT BELOW THIS LINE * * */
+                     (function() {
+                                  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                                                          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                                                  })();
+    </script>
+        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+<!--aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/01/30/github-ci/">
+            GitHub + Continuous Integration
+            <small><time datetime="2015-01-30T00:00:00+06:00">30 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/17/d181d0bed181d183d189d0b5d181d182d0b2d0bed0b2d0b0d0bdd0b8d0b5-uefi-d0b8-d0bbd0b8d0bdd183d0bad181d0bed0b2d0bed0b3d0be-d18fd0b4d180d0b0/">
+            Сосуществование UEFI и линуксового ядра для пребутовой авторизации с помощью гипервизора
+            <small><time datetime="2014-11-17T13:20:53+06:00">17 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/11/07/d0b2d0b8d180d182d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f/">
+            Виртуализация
+            <small><time datetime="2014-11-07T11:52:05+06:00">07 Nov 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside -->
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-01-31T16:36:23+06:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+
+    </div>
+
+  </body>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-59069328-1', 'auto');
+            ga('send', 'pageview');
+
+            </script>
+
+</html>

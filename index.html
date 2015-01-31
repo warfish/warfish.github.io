@@ -47,6 +47,197 @@
     
     <article class="post">
       <h1 class="post-title">
+      <a href="/2015/01/31/CPU-out-of-order-optimization/">
+        CPU out-of-order performance
+      </a>
+    </h1>
+
+    <time datetime="2015-01-31T00:00:00+06:00" class="post-date">31 Jan 2015</time>
+
+    <p>Начиная с <a href="http://en.wikipedia.org/wiki/P6_%28microarchitecture%29">P6</a> интел реализует out-of-order спекулятивную суперскалярную микроархитектуру. Это означает, в общих чертах, что в ядре работают несколько конвееров и оно умеет наружать их микрокодом инструкций не обязательно в том порядке, в котором они идут в машинном коде если результат вычислений в пределах instruction window не меняется. </p>
+
+<p>На практике это означает, что если внутри ограниченной последовательности инструкций последующая инструкция не зависит от результата вычислений предыдущей, то ее можно начать выполнять уже сейчас, оптимально на другом конвеере:</p>
+
+<p>
+<a href="http://www.renesas.com/media/products/mpumcu/rx/getting_started/feature/rxfamily_feature01.gif"><img src="http://www.renesas.com/media/products/mpumcu/rx/getting_started/feature/rxfamily_feature01.gif"></img></a>
+</p>
+
+<p>Это известная фича, но я решил сделать небольшой бенчмарк. Для этого я сделал 64-х битный уефайный бинарник, который запускается на одном ядре на голом железе и выполняет три теста замеряя производительность с помощью сериализующей RDTSCP:
+<ul>
+<li>Первый тест считает оверхед, наложенный работой с RDTSCP - контрольная группа.</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="nl">test0:</span>
+    <span class="c1">; Save-disable interrupts</span>
+    <span class="nf">pushf</span>
+    <span class="nf">cli</span>
+
+    <span class="c1">; Save starting tsc in rbx (wasting some overhead cycles)</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>    
+    <span class="nf">mov</span>     <span class="nb">rbx</span><span class="p">,</span> <span class="nb">rdx</span>    
+    
+    <span class="c1">; Collect end tsc</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>
+    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rbx</span>
+
+    <span class="c1">; Restore interrupts and return</span>
+    <span class="nf">popf</span>
+    <span class="nf">ret</span></code></pre></div>
+
+<p></li></p>
+
+<p><li>
+Второй тест пытается сложить шесть 64-х битных чисел со стека и сохранить результат по указателю на стеке. При этом в коде сложения каждая следующая инструкция зависит от результатов предыдущей</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="nl">test1:</span>
+    <span class="nf">push</span>    <span class="nb">rbp</span>
+    <span class="nf">mov</span>     <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+    <span class="c1">; Save-disable interrupts</span>
+    <span class="nf">pushf</span>
+    <span class="nf">cli</span>
+
+    <span class="c1">; Save starting tsc in rbx (wasting some overhead cycles)</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>    
+    <span class="nf">mov</span>     <span class="nb">rbx</span><span class="p">,</span> <span class="nb">rdx</span>    
+    
+    <span class="c1">; Add numbers</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x18</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x20</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x28</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x30</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x38</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>            
+    
+    <span class="c1">; Store</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="p">[</span><span class="nb">rdx</span><span class="p">],</span> <span class="nb">rax</span>
+
+    <span class="c1">; Collect end tsc</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>    
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>
+    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rbx</span>
+
+    <span class="c1">; Restore interrupts and return</span>
+    <span class="nf">popf</span>
+    <span class="nf">pop</span>     <span class="nb">rbp</span>
+    <span class="nf">ret</span></code></pre></div>
+
+<p></li></p>
+
+<p><li>
+Третий тест делает тоже самое что и второй, но в нем я пытался написать максимально дружелюбный к out-of-order код. При этом количество инструкций выполняющих сложение одинаково в обоих тестах</p>
+
+<div class="highlight"><pre><code class="language-nasm" data-lang="nasm"><span class="nl">test2:</span>
+    <span class="nf">push</span>    <span class="nb">rbp</span>
+    <span class="nf">mov</span>     <span class="nb">rbp</span><span class="p">,</span> <span class="nb">rsp</span>
+
+    <span class="c1">; Save-disable interrupts</span>
+    <span class="nf">pushf</span>
+    <span class="nf">cli</span>
+
+    <span class="c1">; Save starting tsc in rbx (wasting some overhead cycles)</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>    
+    <span class="nf">mov</span>     <span class="nb">rbx</span><span class="p">,</span> <span class="nb">rdx</span>    
+    
+    <span class="c1">; Add numbers</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nb">rcx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x18</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r8</span><span class="p">,</span>  <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x20</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r9</span><span class="p">,</span>  <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x28</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r10</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x30</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="nv">r11</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x38</span><span class="p">]</span>
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rcx</span>
+    <span class="nf">add</span>     <span class="nv">r8</span><span class="p">,</span> <span class="nv">r9</span>
+    <span class="nf">add</span>     <span class="nv">r10</span><span class="p">,</span> <span class="nv">r11</span>
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nv">r8</span>
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nv">r10</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span> 
+
+    <span class="c1">; Store</span>
+    <span class="nf">mov</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="p">[</span><span class="nb">rbp</span> <span class="o">+</span> <span class="mh">0x10</span><span class="p">]</span>
+    <span class="nf">mov</span>     <span class="p">[</span><span class="nb">rdx</span><span class="p">],</span> <span class="nb">rax</span>
+
+    <span class="c1">; Collect end tsc</span>
+    <span class="nf">rdtscp</span>              
+    <span class="nf">shl</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="mi">32</span>     
+    <span class="nf">add</span>     <span class="nb">rdx</span><span class="p">,</span> <span class="nb">rax</span>
+    <span class="nf">mov</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rdx</span>
+    <span class="nf">sub</span>     <span class="nb">rax</span><span class="p">,</span> <span class="nb">rbx</span>
+
+    <span class="c1">; Restore interrupts and return</span>
+    <span class="nf">popf</span>
+    <span class="nf">pop</span>     <span class="nb">rbp</span>
+    <span class="nf">ret</span></code></pre></div>
+
+<p></li></p>
+
+<p></ul></p>
+
+<p>Каждый тест, как я уж сказал, я прогнал 4 раза на голом железе с выключенными прерываниями. Еще я заренее разогревал кеши инструкций верхушки стека предварительным проходом, который не фиксируется:</p>
+
+<ul>
+<li>Первый тест, оверхед замеров:
+<pre>
+0: 36
+1: 36
+2: 36
+3: 36
+Mean: 36
+</pre>
+</li>
+
+<li>Второй тест, пессимизация под out-of-order:
+<pre>
+0: 154
+1: 156
+2: 152
+3: 144
+Mean: 151.5
+</pre>
+</li>
+
+<li>Третий тест, оптимизация под out-of-order:
+<pre>
+0: 40
+1: 40
+2: 40
+3: 40
+Mean: 40
+</pre>
+</li>
+
+</ul>
+
+<p>Результаты говорят сами за себя и в общем-то ожидаемые.</p>
+
+    
+    <span class="tags">
+      
+      <a href="/hardware/">hardware</a>
+      
+    </span>
+
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2015/01/30/github-ci/">
         GitHub + Continuous Integration
       </a>
@@ -373,34 +564,6 @@ Callback отдельная функция, а не код внутри цикл
 
     </article>
     
-    <article class="post">
-      <h1 class="post-title">
-      <a href="/2014/03/11/efi-libc/">
-        EFI libc
-      </a>
-    </h1>
-
-    <time datetime="2014-03-11T23:40:20+07:00" class="post-date">11 Mar 2014</time>
-
-    <p>EDK преследует архитектуру library classes, которая позволяет им обернуть самый безобидный интерфейс, типа ASSERT, в полиморфную библиотеку у которой есть один интерфейс и много реализаций. Конкретная &quot;инстанциация&quot; этого полиморфного интерфейса задается в их билд системе через DSC файл. Реализация C99 stdlib, <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/">EDK/StdLib</a>, которую они взяли из Open/Net/Free BSD и жестко мутировали, работает также. Например memcmp у них <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/String/Comparison.c#l29">реализована</a> через BaseMemoryLib/CompareMem. Такая архитектура позволяет им задавать реализации библиотек для разных этапов загрузки системы (Pei, Dxe, Bbs, Runtime) и местами кажется очень мощной. Но не понятно зачем она нужна в stdlib если они ограничили линковку своей реализации только до EFI_APPLICATION, т.е. только до стадии boot loader-а. Если по-другому, то в результате из реализацию нельзя линковать с EFI драйвером например, хотя бы ради того же memcmp.</p>
-
-<p>Еще один неприятный момент в их реализации - она зависит от EFI shell. В реализации stdio у них скорее всего встал вопрос, как интерпретировать файловые пути где-нибудь в fopen? Ответ такой - через шелл. Их реализация реализует (sic) NetBSD сисколлы через &quot;драйвера устройств&quot;, которые показывают на <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/Uefi/Devices/UefiShell/daShell.c">маппинги файловых систем в шелле</a>. В результате проблема решена, но появляется жесткая зависимость от шелла. Эта зависимость явно отражена в <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/Main/Main.c#l131">реализации точки входа</a>. Также шелл позволяет им ввести понятие аргументов командной строки.</p>
-
-<p>Есть еще россыпь проблем поменьше: типа неготовность их хедеров к компиляции в плюсовом юните трансляции, переопределение флагов компиляции в inf файле, реализация realloc которая <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/branches/UDK2010.SR1/StdLib/LibC/StdLib/Malloc.c#l40">опирается</a> на их же собственные приватные структуры кучи из реализации DxeCore, что делает опасным ее использование на реальном железе где куча реализована иначе. Ну и как и все остальное в EDK она непредназначена для линковки с проектами вне дерева EDK.</p>
-
-<p>Все это заставляет задуматься, а зачем? Возьмем например memcmp. Нужно было <em>выкинуть</em> реализацию чтобы заменить ее своей, через полиморфную либу. Можно было опереться на EFI_SIMPLE_FILE_SYSTEM в реализации fopen приняв например схему с эмуляцией дерева фс через гуиды разделов (/Volume{GUID}/...). Можно было заинвертировать зависимость опубликовав свой кастомный протокол, EDK_LIBC_ARGS например, инстанс которого клиент бы вешал на хендл слинкованного с StdLib приложения. Тоже самое можно было бы сделать и с stdio тоже. Под эту схему и шелл бы подошел. But alas.</p>
-
-<p>И вот конструктивная часть поста. Мне интересно насколько трудоемкий вариант выдернуть реализацию StdLib из EDK и сделать ее зависимой только от UEFI spec. Может быть было бы проще начать с нуля, т.е. с BSD libc и портировать ее. Не знаю, но что-то сделать руки чешутся.</p>
-
-    
-    <span class="tags">
-      
-      <a href="/UEFI/">UEFI</a>
-      
-    </span>
-
-    </article>
-    
     </div>
 
     <div class="pagination">
@@ -417,26 +580,29 @@ Callback отдельная функция, а не код внутри цикл
   <div class="sidebar">
     <ul class="post-list">
       
-      <!-- a style="font-size: 198%" href="/BIOS/">BIOS</a -->
+      <!-- a style="font-size: 182%" href="/BIOS/">BIOS</a -->
       <li><a href="/BIOS/">BIOS</a></li>
       
-      <!-- a style="font-size: 112%" href="/device state/">device state</a -->
+      <!-- a style="font-size: 107%" href="/device state/">device state</a -->
       <li><a href="/device state/">device state</a></li>
       
-      <!-- a style="font-size: 270%" href="/preboot/">preboot</a -->
+      <!-- a style="font-size: 245%" href="/preboot/">preboot</a -->
       <li><a href="/preboot/">preboot</a></li>
       
-      <!-- a style="font-size: 327%" href="/UEFI/">UEFI</a -->
+      <!-- a style="font-size: 295%" href="/UEFI/">UEFI</a -->
       <li><a href="/UEFI/">UEFI</a></li>
       
-      <!-- a style="font-size: 112%" href="/crypto/">crypto</a -->
+      <!-- a style="font-size: 107%" href="/crypto/">crypto</a -->
       <li><a href="/crypto/">crypto</a></li>
       
-      <!-- a style="font-size: 212%" href="/doom-uefi/">doom-uefi</a -->
+      <!-- a style="font-size: 195%" href="/doom-uefi/">doom-uefi</a -->
       <li><a href="/doom-uefi/">doom-uefi</a></li>
       
-      <!-- a style="font-size: 84%" href="/github/">github</a -->
+      <!-- a style="font-size: 82%" href="/github/">github</a -->
       <li><a href="/github/">github</a></li>
+      
+      <!-- a style="font-size: 82%" href="/hardware/">hardware</a -->
+      <li><a href="/hardware/">hardware</a></li>
       
     </ul>
   </div>
@@ -449,7 +615,7 @@ Callback отдельная функция, а не код внутри цикл
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-30T14:19:28+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-31T16:36:23+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

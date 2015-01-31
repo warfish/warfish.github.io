@@ -47,6 +47,66 @@
     
     <article class="post">
       <h1 class="post-title">
+      <a href="/2013/07/20/uefi-quick-ui-toolkit-overview/">
+        [UEFI] Quick UI toolkit overview
+      </a>
+    </h1>
+
+    <time datetime="2013-07-20T15:31:19+07:00" class="post-date">20 Jul 2013</time>
+
+    <p>EFI (нативно и эмулируемо) дает интерфейс <a href="http://wiki.phoenix.com/wiki/index.php/EFI_GRAPHICS_OUTPUT_PROTOCOL">GOP</a>, который поддерживает BitBlt и предлагает реализовывать GUI поверх него.  Предполагается, что BitBlt это все что нужно для этого. Я поискал в интернетах открытые и проприетарные GUI тулкиты для EFI, для embedded и для linux framebuffer, потому что последний достаточно близко эмулируется поверх GOP. Вот что удалось откапать.</p>
+
+<p><strong>C/PEG, PEG+, PEG Pro</strong></p>
+
+<p><a href="http://www.swellsoftware.com/products/cpeg.php">http://www.swellsoftware.com/products/cpeg.php</a></p>
+
+<p>Проприетарное решение от SwellSoftware, ссылка ведет на C/PEG, рядом лежат PEG+ и PEG Pro, которые стоят дороже, но дают больше функционала. В пдфке стоит поддержка x86 VBE и linux framebuffer. К сожалению evaluation kit они хотят слать физической почтой и требуют указать американский штат, поэтому посмотреть в жизни не удается. Тем не менее решение выглядит интересно, хотя цена на лицензирование только по прямому запросу в отдел продаж.</p>
+
+<p><strong>FLTK</strong></p>
+
+<p><a href="http://www.fltk.org/index.php">http://www.fltk.org/index.php</a></p>
+
+<p>Fast Light Tool Kit. Достаточно взрослый и стабильный проект, быстрый, легковесный, умеет рендерить шрифты и содержит достаточно неплохой набор виджетов. Лицензия GPL v2 с небольшими дополнениями, а именно <a href="http://www.fltk.org/COPYING.php">http://www.fltk.org/COPYING.php</a>:</p>
+
+<blockquote>Static linking of applications and widgets to the FLTK library does not constitute a derivative work and does not require the author to provide source code for the application or widget, use the shared FLTK libraries, or link their applications or widgets against a user-supplied version of FLTK.
+
+If you link the application or widget to a modified version of FLTK, then the changes to FLTK must be provided under the terms of the LGPL in sections 1, 2, and 4.</blockquote>
+
+<p>Т.е. позволяет линковаться статически и не требует раскрытия кода клиентского приложения.</p>
+
+<p>Проблема с FLTK в том, что он опирается на Carbon/GDI/X11, что существенно усложняет портирование.</p>
+
+<p><strong>Microwindows</strong></p>
+
+<p><a href="http://www.microwindows.org/">http://www.microwindows.org/</a></p>
+
+<p>Еще один распространенный в embedded среде тулкит. Пристально пока не смотрел, но радует вот это утверждение с главной страницы:</p>
+
+<blockquote>All drivers are endian-neutral with only Read/DrawPixel, DrawV/Hline and Blit entry points.</blockquote>
+
+<p>Т.е. реализация опирается на архитектуру графического драйвера, которому нужны DrawPixel, Draw[V/H]Line и Blit. Опять же, пристально не вглядывался, но такой вариант достаточно портируемый. Лицензирован под <a href="http://www.mozilla.org/MPL/">MPL</a>. Архитектуру можно почитать <a href="http://www.microwindows.org/microwindows_architecture.html">здесь</a>, советую обратить внимание на раздел Screen Driver</p>
+
+<p><strong>Embedded Qt</strong></p>
+
+<p><a href="http://qt-project.org/doc/qt-4.8/qt-embedded-linux.html">http://qt-project.org/doc/qt-4.8/qt-embedded-linux.html</a></p>
+
+<p>Встраиваемая версия Qt работающая поверх linux framebuffer. Очень интересный вариант. Что такое Qt думаю пояснять не стоит, а вот про то, что такое фреймбуфер можно почитать <a href="http://tldp.org/HOWTO/Framebuffer-HOWTO/">здесь</a>.</p>
+
+<p><strong>Итого</strong></p>
+
+<p>Есть еще несколько слишком абстрактных вариантов, типа Tcl\Tk порт, но наиболее интересными мне кажутся варианты с Microwindows и Embedded Qt.</p>
+
+    
+    <span class="tags">
+      
+      <a href="/UEFI/">UEFI</a>
+      
+    </span>
+
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2013/07/13/d183d0bfd180d0b0d0b2d0bbd0b5d0bdd0b8d0b5-d0b2d180d0b5d0bcd0b5d0bdd0b5d0bc/">
         Управление Временем
       </a>
@@ -421,50 +481,6 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
     </article>
     
-    <article class="post">
-      <h1 class="post-title">
-      <a href="/2013/06/16/uefi-emulation-biosthunk-and-protected-mode-versus-real-mode-interrupts/">
-        [UEFI Emulation] BiosThunk and protected mode versus real mode interrupts
-      </a>
-    </h1>
-
-    <time datetime="2013-06-16T20:31:38+07:00" class="post-date">16 Jun 2013</time>
-
-    <p>DuetPkg для реализации доступа к жесткому диску предоставляет драйвера IDE/SATA/AHCI. Я не хочу опираться на них, потому что мне нужно в итоге вернутся в реальный режим для загрузки хостовой ОС, а драйвера портят картину мира для биоса. Выход - опираться на INT 13h. Но тут встает проблема с прерываниями.</p>
-
-<p>Как работает доставка прерываний в Legacy режиме:</p>
-
-<ul>
-<li><p>Железо генерирует прерывание используя линию IRQ</p></li>
-<li><p>Intel 8259A программируемый контроллер прерываний содержит маппинг IRQ -&gt; Software interrupt line. Прерывание от железа маппируется на софтверное прерывание процессора. Типичный маппинг это IRQ 0h - 7h -&gt; INT 8h - Fh и IRQ 8h - Fh -&gt; INT 70h - 77h.</p></li>
-<li><p>Типично для режима совместимости первый жесткий диск использует IRQ 14, которая маппируется на INT 76h. В результате когда жесткий диск хочет сообщить например о завершении запроса на чтение, то он ассертит IRQ 14, что приводит к софтверному прерыванию 76h. Процессор выполняет софтверный обработчик, навешанный на это прерывание.</p></li>
-</ul>
-
-<p>Как процессор определяет где находится обработчик прерывания 76h? Здесь все зависит от режима процессора:</p>
-
-<p>В реальном режиме 8086 по линейному адресу 0x0 содержится таблица указателей на обработчики прерываний. Каждый элемент длинной 4 байта и содержит segment:offset указатель на 16-ти битный код обработчика. BIOS инициализирует эту таблицу указателями на обработчики при старте машины. Процессор просто достает 4 байта по смещению 0x76 * 0x4, интерпретирует это как segment:offset указатель и выполняет icall туда.</p>
-
-<p>В защищенном режиме все устроено сложнее. Вместо таблицы указателей с известным оффсетом процессор требует от системного программного обеспечения проинициализировать регистр IDTR, в котором должен быть адрес на описание дескрипторов IDT. IDT похож на GDT в том плане, что в нем содержится 4 байтовый линейный адрес на начало таблицы обработчиков прерываний и ее размер. Сама таблица содержит структуры дескрипторов обработчиков прерываний. Их структуру я объяснять не буду, подробнее можно почитать здесь: <a href="http://wiki.osdev.org/IDT">http://wiki.osdev.org/IDT</a>. Суть в том, что в защищенном режиме процессор использует (установленное софтом) значение регистра IDTR для поиска указателя на процедуру - обработчик прерывания.</p>
-
-<p>В чем проблема?</p>
-
-<p>Наше окружение на базе UEFI работает в защищенном режиме, а это значит что оно должно предоставлять IDT. Для чтения диска мы хотим опираться на BIOS, но BIOS работает в реальном режиме, в котором процессор ничего не знает про IDTR и хочет простую таблицу указателей на 16-ти битный код. Когда мы вовращаемся из защищенного режима в реальный, то все будет работать нормально, потому что обработчики BIOSа окажутся на месте. Что делать когда мы работаем в защищенном режиме? Прерывания доставляются асинхронно и BIOS не будет о них знать, если мы не будем их форвардить. Вопрос, нужно ли из форвардить или нет? DuetPkg этого не делает, но это ни о чем не говорит.</p>
-
-<p>С DuetPkg в этом плане еще хуже. Он использует механизм BiosThunk для реализации EFI_GRAPHICS_OUTPUT_PROTOCOL через ISR 10h биоса: <a href="http://sourceforge.net/p/edk2/code/HEAD/tree/trunk/edk2/DuetPkg/BiosVideoThunkDxe">BiosVideoThunkDxe</a>. Что именно там происходит я описывать не буду - главное то, что код вектора 10h исполняется с выключенными прерываниями. Драйвер возвращается в реальный режим, но при этом весь код, выполняющийся там, выполняется с выключенными прерываниями. Вместо инструкции int драйвер напрямую вызывает код обработчика по указателю. Это значит, что использовать такой механизм для вызова INT 13h нельзя, потому что INT 13h ожидает от диска ответного прерывания по окончанию запроса, с таймаутом. До получения такого ответа он не возвращается, а по истечению таймаута возвращается с ошибкой. Даже если в защищенном режиме реализован форвардинг прерываний в BIOS, то он сработает слишком поздно - когда int 13h уже вернулся, потому что прерывания от диска не было. Clover, как оказалось, своим драйвером диска поверх INT 13h не пользуется.</p>
-
-<p>Почему Duet так делает? Потому что во-первых у него есть драйвера дисков, во-вторых он не хочет пропустить прерывания когда делает thunk в 16-ти битный код и в третьих потому что 10h прерывания не нужны для работы. Проблема есть, но пока она роли не играет. Если мы уходим в реальный режим &quot;насовсем&quot;, т.е. чтобы загрузить хостовую ОС, то нам не нужен thunk. Проблема будет, когда мы захотим прочитать с диска во время работы. Решить это можно грубо, включив таки прерывания во время thunk-а и перенаправив их в обработчики биоса. Тогда Duet может потерять несколько прерываний. В крайнем случае придется мутить что-то страшное наподобие редиректора прерываний в оба режима.</p>
-
-    
-    <span class="tags">
-      
-      <a href="/preboot/">preboot</a>
-      
-      <a href="/UEFI/">UEFI</a>
-      
-    </span>
-
-    </article>
-    
     </div>
 
     <div class="pagination">
@@ -483,26 +499,29 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
   <div class="sidebar">
     <ul class="post-list">
       
-      <!-- a style="font-size: 198%" href="/BIOS/">BIOS</a -->
+      <!-- a style="font-size: 182%" href="/BIOS/">BIOS</a -->
       <li><a href="/BIOS/">BIOS</a></li>
       
-      <!-- a style="font-size: 112%" href="/device state/">device state</a -->
+      <!-- a style="font-size: 107%" href="/device state/">device state</a -->
       <li><a href="/device state/">device state</a></li>
       
-      <!-- a style="font-size: 270%" href="/preboot/">preboot</a -->
+      <!-- a style="font-size: 245%" href="/preboot/">preboot</a -->
       <li><a href="/preboot/">preboot</a></li>
       
-      <!-- a style="font-size: 327%" href="/UEFI/">UEFI</a -->
+      <!-- a style="font-size: 295%" href="/UEFI/">UEFI</a -->
       <li><a href="/UEFI/">UEFI</a></li>
       
-      <!-- a style="font-size: 112%" href="/crypto/">crypto</a -->
+      <!-- a style="font-size: 107%" href="/crypto/">crypto</a -->
       <li><a href="/crypto/">crypto</a></li>
       
-      <!-- a style="font-size: 212%" href="/doom-uefi/">doom-uefi</a -->
+      <!-- a style="font-size: 195%" href="/doom-uefi/">doom-uefi</a -->
       <li><a href="/doom-uefi/">doom-uefi</a></li>
       
-      <!-- a style="font-size: 84%" href="/github/">github</a -->
+      <!-- a style="font-size: 82%" href="/github/">github</a -->
       <li><a href="/github/">github</a></li>
+      
+      <!-- a style="font-size: 82%" href="/hardware/">hardware</a -->
+      <li><a href="/hardware/">hardware</a></li>
       
     </ul>
   </div>
@@ -515,7 +534,7 @@ If you are interested in porting to other platforms, the [PORTING](http://git.li
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-30T14:19:28+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-31T16:36:23+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 

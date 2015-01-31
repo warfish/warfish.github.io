@@ -47,6 +47,40 @@
     
     <article class="post">
       <h1 class="post-title">
+      <a href="/2013/05/19/uefi-spec-2-3-1/">
+        UEFI 2.3.1 - User Interface Infrastructure
+      </a>
+    </h1>
+
+    <time datetime="2013-05-19T18:36:25+07:00" class="post-date">19 May 2013</time>
+
+    <p>Выгрузил последнюю спецификацию UEFI API: <a href="https://dl.dropboxusercontent.com/u/42224890/UEFI_Spec_2_3_1.pdf">https://dl.dropboxusercontent.com/u/42224890/UEFI_Spec_2_3_1.pdf</a></p>
+
+<p>Интересные для PBA UI вещи находятся в пунктах 28 и 29. Описывают user interface infrastructure, клавиатурные раскладки, шрифты и формы ввода. Если быстро пробежаться по реализациям этого кода в tianocore, то, на первый взгляд, кажется что они зависят от следующих вещей (цифры указывают на раздел спецификации):</p>
+
+<ol>
+<li><p>Simple Text Input protocol - 11.3</p></li>
+<li><p>Simple Text Output protocol - 11.4</p></li>
+<li><p>Simple Pointer Protocol - 11.5</p></li>
+<li><p>Absolute Pointer Protocol - 11.7</p></li>
+<li><p>Graphics Output Protocol - 11.9</p></li>
+</ol>
+
+<p>Поддержка юникода (UTF16LE) идет через реализацию стандартной библиотеки, т.е. опять же прикладной код, который я правда еще не копал, но думаю что он зависит в основном от менеджера памяти. В результате пока что это все зависимости прикладного кода поддержки UI в уефае которые я нашел. При наличии stdlib с уникодом их достаточно несложно реализовать через BIOS. Самый сложный это пожалуй Absolute Pointer Protocol.</p>
+
+    
+    <span class="tags">
+      
+      <a href="/preboot/">preboot</a>
+      
+      <a href="/UEFI/">UEFI</a>
+      
+    </span>
+
+    </article>
+    
+    <article class="post">
+      <h1 class="post-title">
       <a href="/2013/05/17/uefi-capabilities-and-strategy/">
         UEFI capabilities and strategy
       </a>
@@ -388,26 +422,29 @@ LDD chapter 12 &quot;PCI drivers&quot;: <a href="http://lwn.net/images/pdf/LDD3
   <div class="sidebar">
     <ul class="post-list">
       
-      <!-- a style="font-size: 198%" href="/BIOS/">BIOS</a -->
+      <!-- a style="font-size: 182%" href="/BIOS/">BIOS</a -->
       <li><a href="/BIOS/">BIOS</a></li>
       
-      <!-- a style="font-size: 112%" href="/device state/">device state</a -->
+      <!-- a style="font-size: 107%" href="/device state/">device state</a -->
       <li><a href="/device state/">device state</a></li>
       
-      <!-- a style="font-size: 270%" href="/preboot/">preboot</a -->
+      <!-- a style="font-size: 245%" href="/preboot/">preboot</a -->
       <li><a href="/preboot/">preboot</a></li>
       
-      <!-- a style="font-size: 327%" href="/UEFI/">UEFI</a -->
+      <!-- a style="font-size: 295%" href="/UEFI/">UEFI</a -->
       <li><a href="/UEFI/">UEFI</a></li>
       
-      <!-- a style="font-size: 112%" href="/crypto/">crypto</a -->
+      <!-- a style="font-size: 107%" href="/crypto/">crypto</a -->
       <li><a href="/crypto/">crypto</a></li>
       
-      <!-- a style="font-size: 212%" href="/doom-uefi/">doom-uefi</a -->
+      <!-- a style="font-size: 195%" href="/doom-uefi/">doom-uefi</a -->
       <li><a href="/doom-uefi/">doom-uefi</a></li>
       
-      <!-- a style="font-size: 84%" href="/github/">github</a -->
+      <!-- a style="font-size: 82%" href="/github/">github</a -->
       <li><a href="/github/">github</a></li>
+      
+      <!-- a style="font-size: 82%" href="/hardware/">hardware</a -->
+      <li><a href="/hardware/">hardware</a></li>
       
     </ul>
   </div>
@@ -420,7 +457,7 @@ LDD chapter 12 &quot;PCI drivers&quot;: <a href="http://lwn.net/images/pdf/LDD3
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-01-30T14:19:28+06:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-01-31T16:36:23+06:00">2015</time>. All rights reserved.
         </small>
       </footer>
 
